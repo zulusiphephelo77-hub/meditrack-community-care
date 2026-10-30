@@ -60,7 +60,7 @@ async function ensureUserAndSignIn(
 const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
 
 export const patientLogin = createServerFn({ method: "POST" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         patientNumber: z.string().trim().min(3).max(20),
@@ -87,7 +87,7 @@ export const patientLogin = createServerFn({ method: "POST" })
   });
 
 export const facilityLogin = createServerFn({ method: "POST" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ username: z.string().trim().min(2).max(50), password: z.string().min(1).max(100) }).parse(d),
   )
   .handler(async ({ data }) => {
