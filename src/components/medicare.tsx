@@ -39,7 +39,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
           <Link
             key={it.to}
             to={it.to}
-            activeOptions={{ exact: it.exact }}
+            activeOptions={{ exact: !!it.exact }}
             className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground transition-colors md:flex-row md:justify-center md:text-sm"
             activeProps={{ className: "text-primary" }}
           >
