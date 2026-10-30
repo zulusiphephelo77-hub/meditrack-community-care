@@ -232,30 +232,166 @@ export type Database = {
           },
         ]
       }
+      stock_transfers: {
+        Row: {
+          created_at: string
+          from_batch_id: string
+          from_facility_id: string
+          id: string
+          medicine_id: string
+          quantity: number
+          requested_by_facility_id: string | null
+          status: string
+          to_facility_id: string
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          created_at?: string
+          from_batch_id: string
+          from_facility_id: string
+          id?: string
+          medicine_id: string
+          quantity: number
+          requested_by_facility_id?: string | null
+          status?: string
+          to_facility_id: string
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          created_at?: string
+          from_batch_id?: string
+          from_facility_id?: string
+          id?: string
+          medicine_id?: string
+          quantity?: number
+          requested_by_facility_id?: string | null
+          status?: string
+          to_facility_id?: string
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transfers_from_batch_id_fkey"
+            columns: ["from_batch_id"]
+            isOneToOne: false
+            referencedRelation: "stock_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_from_facility_id_fkey"
+            columns: ["from_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_requested_by_facility_id_fkey"
+            columns: ["requested_by_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_to_facility_id_fkey"
+            columns: ["to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transfer_history: {
+        Row: {
+          action: string
+          actor_facility_id: string | null
+          created_at: string
+          details: string | null
+          id: string
+          patient_request_id: string | null
+          stock_transfer_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_facility_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          patient_request_id?: string | null
+          stock_transfer_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_facility_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          patient_request_id?: string | null
+          stock_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfer_history_actor_facility_id_fkey"
+            columns: ["actor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_history_patient_request_id_fkey"
+            columns: ["patient_request_id"]
+            isOneToOne: false
+            referencedRelation: "transfer_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_history_stock_transfer_id_fkey"
+            columns: ["stock_transfer_id"]
+            isOneToOne: false
+            referencedRelation: "stock_transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transfer_requests: {
         Row: {
           created_at: string
           id: string
+          kind: string
           medicine_id: string | null
           patient_id: string
           status: string
           to_facility_id: string | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
+          kind?: string
           medicine_id?: string | null
           patient_id: string
           status?: string
           to_facility_id?: string | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
+          kind?: string
           medicine_id?: string | null
           patient_id?: string
           status?: string
           to_facility_id?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -304,6 +440,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      act_on_patient_request: {
+        Args: { _id: string; _status: string }
+        Returns: undefined
+      }
+      act_on_stock_transfer: {
+        Args: { _action: string; _id: string }
+        Returns: undefined
+      }
+      create_stock_transfer: {
+        Args: {
+          _batch: string
+          _from: string
+          _medicine: string
+          _qty: number
+          _to: string
+          _urgency: string
+        }
+        Returns: string
+      }
       current_patient_id: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -312,6 +467,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      my_facility_id: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "patient" | "facility"
