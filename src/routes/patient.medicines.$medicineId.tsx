@@ -29,7 +29,7 @@ function MedicineDetails() {
       medicine_id: medicineId,
       to_facility_id: data.nearestHospital?.facility.id ?? null,
     });
-    if (error) return toast.error("Could not send the request");
+    if (error) { toast.error("Could not send the request"); return; }
     setSent(true);
     toast.success(`Request sent to ${data.nearestHospital?.facility.name ?? "the nearest hospital"}`);
   }
