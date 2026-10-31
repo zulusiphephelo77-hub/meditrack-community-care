@@ -49,3 +49,9 @@ export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; ln
     Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(x));
 }
+
+export const SPARE_COVER_DAYS = 60;
+/** Units a facility can give away while keeping 60 days of its own supply. */
+export function spareQuantity(s: { quantity: number; dailyUse: number }) {
+  return Math.max(0, Math.floor(s.quantity - s.dailyUse * SPARE_COVER_DAYS));
+}

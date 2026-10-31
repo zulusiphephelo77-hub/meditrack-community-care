@@ -24,3 +24,13 @@ describe("stock status", () => {
     expect(summarizeStock([b(80, 100, 2, "2027-03-15")], today).expiringSoon).toBe(false);
   });
 });
+
+import { spareQuantity } from "./stock";
+describe("spare stock", () => {
+  it("keeps 60 days of own supply", () => {
+    expect(spareQuantity({ quantity: 950, dailyUse: 5 })).toBe(650);
+  });
+  it("never negative", () => {
+    expect(spareQuantity({ quantity: 20, dailyUse: 3 })).toBe(0);
+  });
+});
