@@ -15,6 +15,10 @@ import { Route as FacilityLoginRouteImport } from './routes/facility-login'
 import { Route as PatientRouteImport } from './routes/patient'
 import { Route as PatientLoginRouteImport } from './routes/patient-login'
 import { Route as FacilityIndexRouteImport } from './routes/facility.index'
+import { Route as FacilityAlertsRouteImport } from './routes/facility.alerts'
+import { Route as FacilityMoreRouteImport } from './routes/facility.more'
+import { Route as FacilityOrdersRouteImport } from './routes/facility.orders'
+import { Route as FacilityReportsRouteImport } from './routes/facility.reports'
 import { Route as FacilityStockRouteImport } from './routes/facility.stock'
 import { Route as PatientIndexRouteImport } from './routes/patient.index'
 import { Route as PatientAppointmentsRouteImport } from './routes/patient.appointments'
@@ -50,6 +54,26 @@ const PatientLoginRoute = PatientLoginRouteImport.update({
 const FacilityIndexRoute = FacilityIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityAlertsRoute = FacilityAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityMoreRoute = FacilityMoreRouteImport.update({
+  id: '/more',
+  path: '/more',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityOrdersRoute = FacilityOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityReportsRoute = FacilityReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => FacilityRoute,
 } as any)
 const FacilityStockRoute = FacilityStockRouteImport.update({
@@ -90,6 +114,10 @@ export interface FileRoutesByFullPath {
   '/facility-login': typeof FacilityLoginRoute
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
+  '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/more': typeof FacilityMoreRoute
+  '/facility/orders': typeof FacilityOrdersRoute
+  '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
@@ -102,6 +130,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/facility-login': typeof FacilityLoginRoute
   '/patient-login': typeof PatientLoginRoute
+  '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/more': typeof FacilityMoreRoute
+  '/facility/orders': typeof FacilityOrdersRoute
+  '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
@@ -117,6 +149,10 @@ export interface FileRoutesById {
   '/facility-login': typeof FacilityLoginRoute
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
+  '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/more': typeof FacilityMoreRoute
+  '/facility/orders': typeof FacilityOrdersRoute
+  '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
@@ -133,6 +169,10 @@ export interface FileRouteTypes {
     | '/facility-login'
     | '/patient'
     | '/patient-login'
+    | '/facility/alerts'
+    | '/facility/more'
+    | '/facility/orders'
+    | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
@@ -145,6 +185,10 @@ export interface FileRouteTypes {
     | '/'
     | '/facility-login'
     | '/patient-login'
+    | '/facility/alerts'
+    | '/facility/more'
+    | '/facility/orders'
+    | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
@@ -159,6 +203,10 @@ export interface FileRouteTypes {
     | '/facility-login'
     | '/patient'
     | '/patient-login'
+    | '/facility/alerts'
+    | '/facility/more'
+    | '/facility/orders'
+    | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
@@ -220,6 +268,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacilityIndexRouteImport
       parentRoute: typeof FacilityRoute
     }
+    '/facility/alerts': {
+      id: '/facility/alerts'
+      path: '/alerts'
+      fullPath: '/facility/alerts'
+      preLoaderRoute: typeof FacilityAlertsRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/more': {
+      id: '/facility/more'
+      path: '/more'
+      fullPath: '/facility/more'
+      preLoaderRoute: typeof FacilityMoreRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/orders': {
+      id: '/facility/orders'
+      path: '/orders'
+      fullPath: '/facility/orders'
+      preLoaderRoute: typeof FacilityOrdersRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/reports': {
+      id: '/facility/reports'
+      path: '/reports'
+      fullPath: '/facility/reports'
+      preLoaderRoute: typeof FacilityReportsRouteImport
+      parentRoute: typeof FacilityRoute
+    }
     '/facility/stock': {
       id: '/facility/stock'
       path: '/stock'
@@ -266,11 +342,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface FacilityRouteChildren {
+  FacilityAlertsRoute: typeof FacilityAlertsRoute
+  FacilityMoreRoute: typeof FacilityMoreRoute
+  FacilityOrdersRoute: typeof FacilityOrdersRoute
+  FacilityReportsRoute: typeof FacilityReportsRoute
   FacilityStockRoute: typeof FacilityStockRoute
   FacilityIndexRoute: typeof FacilityIndexRoute
 }
 
 const FacilityRouteChildren: FacilityRouteChildren = {
+  FacilityAlertsRoute: FacilityAlertsRoute,
+  FacilityMoreRoute: FacilityMoreRoute,
+  FacilityOrdersRoute: FacilityOrdersRoute,
+  FacilityReportsRoute: FacilityReportsRoute,
   FacilityStockRoute: FacilityStockRoute,
   FacilityIndexRoute: FacilityIndexRoute,
 }

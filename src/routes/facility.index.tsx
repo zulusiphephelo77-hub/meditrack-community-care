@@ -1,82 +1,64 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, CalendarClock, LogOut, Package, PackageX, TrendingUp } from "lucide-react";
-import { Card, IconTile, Logo, StatusBadge } from "@/components/medicare";
-import { fetchFacilityOverview } from "@/lib/queries";
-import { signOut } from "@/lib/role-guard";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertTriangle, BarChart3, Boxes, CalendarClock, Package, Truck, ClipboardList } from "lucide-react";
+import { Card, IconTile } from "@/components/medicare";
+import { inScope, OPEN_REQUEST, OPEN_TRANSFER } from "@/lib/network";
+import { FacilityHeader, useFacilityCtx } from "./facility";
 
 export const Route = createFileRoute("/facility/")({ component: FacilityDashboard });
 
-export function useFacility() {
-  return useQuery({ queryKey: ["facility-overview"], queryFn: fetchFacilityOverview });
-}
-
 function FacilityDashboard() {
-  const { data } = useFacility();
-  const qc = useQueryClient();
-  const navigate = useNavigate();
-  if (!data) return <p className="text-muted-foreground">Loading…</p>;
-  const { facility, items } = data;
-  const low = items.filter((i) => i.stock.status === "low");
-  const out = items.filter((i) => i.stock.status === "out");
-  const expiring = items.filter((i) => i.stock.expiringSoon);
-  const surplus = items.filter((i) => i.stock.surplus);
-  const alerts = [...out, ...low];
+  const { net, scope } = useFacilityCtx();
+  if (!net) return null;
+  const items = inScope(net.items, scope);
+  const low = items.filter((i) => i.stock.status !== "in_stock").length;
+  const expiring = items.filter((i) => i.stock.expiringSoon).length;
+  const involved = (id: string) => scope === "all" || id === scope;
+  const pending =
+    net.transfers.filter((t) => OPEN_TRANSFER.includes(t.status) && (involved(t.from_facility_id) || involved(t.to_facility_id))).length +
+    net.requests.filter((r) => OPEN_REQUEST.includes(r.status) && r.to_facility_id && involved(r.to_facility_id)).length;
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-        <Logo />
-        <button aria-label="Sign out" onClick={async () => { await signOut(qc); navigate({ to: "/", replace: true }); }}
-          className="rounded-full border border-border bg-card p-2 text-muted-foreground"><LogOut className="h-4 w-4" /></button>
-      </div>
-      <div>
-        <h1 className="text-2xl font-bold">Facility Dashboard</h1>
-        <p className="text-sm text-muted-foreground">{facility.name} · {facility.kind} · {facility.district}</p>
-      </div>
-
+      <FacilityHeader title="Facility Dashboard" />
       <div className="grid grid-cols-2 gap-3">
-        <Stat icon={Package} label="Stock items" value={items.length} />
-        <Stat icon={AlertTriangle} label="Low stock" value={low.length} tone="warning" />
-        <Stat icon={PackageX} label="Out of stock" value={out.length} tone="danger" />
-        <Stat icon={CalendarClock} label="Expiring soon" value={expiring.length} tone="warning" />
+        <Stat icon={Package} label="Total Stock Items" value={items.length} />
+        <Stat icon={AlertTriangle} label="Low Stock" value={low} cls="bg-warning-soft text-warning-foreground" />
+        <Stat icon={CalendarClock} label="Expiring Soon" value={expiring} cls="bg-destructive-soft text-destructive" />
+        <Stat icon={ClipboardList} label="Orders Pending" value={pending} />
       </div>
-
-      {surplus.length > 0 && (
-        <div className="flex gap-3 rounded-2xl bg-success-soft p-4">
-          <TrendingUp className="h-5 w-5 shrink-0 text-success" />
-          <p className="text-sm"><span className="font-semibold">Surplus available:</span> {surplus.map((s) => s.medicine.name).join(", ")}. Consider transferring to a high-demand site.</p>
-        </div>
-      )}
-
       <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold">Needs attention</h2>
-          <Link to="/facility/stock" className="text-sm font-medium text-primary">All stock</Link>
-        </div>
-        {alerts.length === 0 && <p className="text-sm text-muted-foreground">All medicines are well stocked.</p>}
-        <div className="space-y-2">
-          {alerts.map((i) => (
-            <Card key={i.medicine.id} className="flex items-center justify-between py-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{i.medicine.name}</p>
-                <p className="text-xs text-muted-foreground">Stock: {i.stock.quantity} / {i.stock.capacity}</p>
-              </div>
-              <StatusBadge status={i.stock.status} />
-            </Card>
-          ))}
+        <h2 className="mb-2 font-semibold">Quick Actions</h2>
+        <div className="grid grid-cols-4 gap-2">
+          <Quick to="/facility/stock" icon={Boxes} label="Stock & Inventory" />
+          <Quick to="/facility/orders" icon={Truck} label="Orders & Deliveries" />
+          <Quick to="/facility/alerts" icon={CalendarClock} label="Expiry Alerts" />
+          <Quick to="/facility/reports" icon={BarChart3} label="Reports" />
         </div>
       </section>
+      {net.shortages.length > 0 && (
+        <Link to="/facility/orders" className="block rounded-2xl bg-primary-soft p-4 text-sm">
+          <span className="font-semibold text-primary-deep">Where is stock short?</span>
+          <span className="block text-muted-foreground">{inScope(net.shortages, scope).length} shortages with nearby surplus options →</span>
+        </Link>
+      )}
     </div>
   );
 }
 
-function Stat({ icon, label, value, tone }: { icon: typeof Package; label: string; value: number; tone?: "warning" | "danger" }) {
-  const cls = tone === "warning" ? "bg-warning-soft text-warning-foreground" : tone === "danger" ? "bg-destructive-soft text-destructive" : undefined;
+function Stat({ icon, label, value, cls }: { icon: typeof Package; label: string; value: number; cls?: string }) {
   return (
     <Card className="flex items-center gap-3">
       <IconTile icon={icon} className={cls} />
-      <div><p className="text-xs text-muted-foreground">{label}</p><p className="text-2xl font-bold">{value}</p></div>
+      <div className="min-w-0"><p className="text-xs leading-tight text-muted-foreground">{label}</p><p className="text-2xl font-bold">{value}</p></div>
     </Card>
+  );
+}
+
+function Quick({ to, icon: Icon, label }: { to: string; icon: typeof Package; label: string }) {
+  return (
+    <Link to={to} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-2.5 text-center text-[11px] font-medium leading-tight shadow-card">
+      <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-soft text-primary"><Icon className="h-5 w-5" /></span>
+      {label}
+    </Link>
   );
 }
