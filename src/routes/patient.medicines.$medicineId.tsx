@@ -71,6 +71,8 @@ function MedicineDetails() {
         </span>
       </button>
 
+      <Link to="/patient/transfer" search={{ medicineId }} className="block text-center text-sm font-semibold text-primary">More options: transcript or transfer →</Link>
+
       <button onClick={() => setShowAlt(!showAlt)} className="flex w-full items-center gap-3 rounded-2xl bg-primary-soft p-4 text-left">
         <MapPin className="h-5 w-5 shrink-0 text-primary" />
         <span>
