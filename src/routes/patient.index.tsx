@@ -72,7 +72,7 @@ function Dashboard() {
               </p>
             </div>
           </div>
-          <Link to="/patient/medicines/$medicineId" params={{ medicineId: unavailable.medicine.id }}
+          <Link to="/patient/transfer" search={{ medicineId: unavailable.medicine.id }}
             className="mt-3 flex w-full items-center justify-center rounded-xl bg-destructive py-3 text-sm font-semibold text-destructive-foreground">
             View options
           </Link>

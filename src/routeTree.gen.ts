@@ -23,6 +23,7 @@ import { Route as FacilityStockRouteImport } from './routes/facility.stock'
 import { Route as PatientIndexRouteImport } from './routes/patient.index'
 import { Route as PatientAppointmentsRouteImport } from './routes/patient.appointments'
 import { Route as PatientMoreRouteImport } from './routes/patient.more'
+import { Route as PatientTransferRouteImport } from './routes/patient.transfer'
 import { Route as PatientMedicinesIndexRouteImport } from './routes/patient.medicines.index'
 import { Route as PatientMedicinesMedicineIdRouteImport } from './routes/patient.medicines.$medicineId'
 
@@ -96,6 +97,11 @@ const PatientMoreRoute = PatientMoreRouteImport.update({
   path: '/more',
   getParentRoute: () => PatientRoute,
 } as any)
+const PatientTransferRoute = PatientTransferRouteImport.update({
+  id: '/transfer',
+  path: '/transfer',
+  getParentRoute: () => PatientRoute,
+} as any)
 const PatientMedicinesIndexRoute = PatientMedicinesIndexRouteImport.update({
   id: '/medicines/',
   path: '/medicines/',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
+  '/patient/transfer': typeof PatientTransferRoute
   '/facility/': typeof FacilityIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/patient/medicines/$medicineId': typeof PatientMedicinesMedicineIdRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
+  '/patient/transfer': typeof PatientTransferRoute
   '/facility': typeof FacilityIndexRoute
   '/patient': typeof PatientIndexRoute
   '/patient/medicines/$medicineId': typeof PatientMedicinesMedicineIdRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
   '/patient/more': typeof PatientMoreRoute
+  '/patient/transfer': typeof PatientTransferRoute
   '/facility/': typeof FacilityIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/patient/medicines/$medicineId': typeof PatientMedicinesMedicineIdRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
+    | '/patient/transfer'
     | '/facility/'
     | '/patient/'
     | '/patient/medicines/$medicineId'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
+    | '/patient/transfer'
     | '/facility'
     | '/patient'
     | '/patient/medicines/$medicineId'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/facility/stock'
     | '/patient/appointments'
     | '/patient/more'
+    | '/patient/transfer'
     | '/facility/'
     | '/patient/'
     | '/patient/medicines/$medicineId'
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientMoreRouteImport
       parentRoute: typeof PatientRoute
     }
+    '/patient/transfer': {
+      id: '/patient/transfer'
+      path: '/transfer'
+      fullPath: '/patient/transfer'
+      preLoaderRoute: typeof PatientTransferRouteImport
+      parentRoute: typeof PatientRoute
+    }
     '/patient/medicines/': {
       id: '/patient/medicines/'
       path: '/medicines'
@@ -366,6 +385,7 @@ const FacilityRouteWithChildren = FacilityRoute._addFileChildren(
 interface PatientRouteChildren {
   PatientAppointmentsRoute: typeof PatientAppointmentsRoute
   PatientMoreRoute: typeof PatientMoreRoute
+  PatientTransferRoute: typeof PatientTransferRoute
   PatientIndexRoute: typeof PatientIndexRoute
   PatientMedicinesMedicineIdRoute: typeof PatientMedicinesMedicineIdRoute
   PatientMedicinesIndexRoute: typeof PatientMedicinesIndexRoute
@@ -374,6 +394,7 @@ interface PatientRouteChildren {
 const PatientRouteChildren: PatientRouteChildren = {
   PatientAppointmentsRoute: PatientAppointmentsRoute,
   PatientMoreRoute: PatientMoreRoute,
+  PatientTransferRoute: PatientTransferRoute,
   PatientIndexRoute: PatientIndexRoute,
   PatientMedicinesMedicineIdRoute: PatientMedicinesMedicineIdRoute,
   PatientMedicinesIndexRoute: PatientMedicinesIndexRoute,
