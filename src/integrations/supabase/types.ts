@@ -53,6 +53,70 @@ export type Database = {
           },
         ]
       }
+      automation_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: string | null
+          facility_id: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: string | null
+          facility_id?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: string | null
+          facility_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cold_chain_readings: {
+        Row: {
+          breach: boolean
+          created_at: string
+          facility_id: string
+          id: string
+          temperature: number
+        }
+        Insert: {
+          breach: boolean
+          created_at?: string
+          facility_id: string
+          id?: string
+          temperature: number
+        }
+        Update: {
+          breach?: boolean
+          created_at?: string
+          facility_id?: string
+          id?: string
+          temperature?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cold_chain_readings_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       facilities: {
         Row: {
           code: string
@@ -89,6 +153,44 @@ export type Database = {
         }
         Relationships: []
       }
+      facility_settings: {
+        Row: {
+          auto_order_enabled: boolean
+          expiry_months: number
+          facility_id: string
+          order_qty_mode: string
+          threshold_count: number
+          threshold_mode: string
+          threshold_percent: number
+        }
+        Insert: {
+          auto_order_enabled?: boolean
+          expiry_months?: number
+          facility_id: string
+          order_qty_mode?: string
+          threshold_count?: number
+          threshold_mode?: string
+          threshold_percent?: number
+        }
+        Update: {
+          auto_order_enabled?: boolean
+          expiry_months?: number
+          facility_id?: string
+          order_qty_mode?: string
+          threshold_count?: number
+          threshold_mode?: string
+          threshold_percent?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_settings_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medicines: {
         Row: {
           code: string
@@ -112,6 +214,50 @@ export type Database = {
           unit?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          dedupe_key: string | null
+          facility_id: string
+          id: string
+          kind: string
+          payload: Json | null
+          status: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          dedupe_key?: string | null
+          facility_id: string
+          id?: string
+          kind: string
+          payload?: Json | null
+          status?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          dedupe_key?: string | null
+          facility_id?: string
+          id?: string
+          kind?: string
+          payload?: Json | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_medicines: {
         Row: {
@@ -184,36 +330,105 @@ export type Database = {
           },
         ]
       }
+      sim_clock: {
+        Row: {
+          id: number
+          offset_days: number
+        }
+        Insert: {
+          id?: number
+          offset_days?: number
+        }
+        Update: {
+          id?: number
+          offset_days?: number
+        }
+        Relationships: []
+      }
+      stock_adjustments: {
+        Row: {
+          batch_id: string
+          catalogue_quantity: number
+          counted_quantity: number
+          created_at: string
+          facility_id: string | null
+          id: string
+          reason: string
+          variance: number
+        }
+        Insert: {
+          batch_id: string
+          catalogue_quantity: number
+          counted_quantity: number
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          reason: string
+          variance: number
+        }
+        Update: {
+          batch_id?: string
+          catalogue_quantity?: number
+          counted_quantity?: number
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          reason?: string
+          variance?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_adjustments_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "stock_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_adjustments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_batches: {
         Row: {
           avg_daily_use: number
           batch_number: string
+          bin_location: string | null
           expiry_date: string
           facility_id: string
           id: string
           max_capacity: number
           medicine_id: string
           quantity: number
+          storage: string
         }
         Insert: {
           avg_daily_use?: number
           batch_number: string
+          bin_location?: string | null
           expiry_date: string
           facility_id: string
           id?: string
           max_capacity?: number
           medicine_id: string
           quantity?: number
+          storage?: string
         }
         Update: {
           avg_daily_use?: number
           batch_number?: string
+          bin_location?: string | null
           expiry_date?: string
           facility_id?: string
           id?: string
           max_capacity?: number
           medicine_id?: string
           quantity?: number
+          storage?: string
         }
         Relationships: [
           {
@@ -241,6 +456,7 @@ export type Database = {
           medicine_id: string
           quantity: number
           requested_by_facility_id: string | null
+          source: string
           status: string
           to_facility_id: string
           updated_at: string
@@ -254,6 +470,7 @@ export type Database = {
           medicine_id: string
           quantity: number
           requested_by_facility_id?: string | null
+          source?: string
           status?: string
           to_facility_id: string
           updated_at?: string
@@ -267,6 +484,7 @@ export type Database = {
           medicine_id?: string
           quantity?: number
           requested_by_facility_id?: string | null
+          source?: string
           status?: string
           to_facility_id?: string
           updated_at?: string
@@ -448,6 +666,10 @@ export type Database = {
         Args: { _action: string; _id: string }
         Returns: undefined
       }
+      apply_stock_take: {
+        Args: { _batch: string; _counted: number; _reason: string }
+        Returns: undefined
+      }
       create_stock_transfer: {
         Args: {
           _batch: string
@@ -467,7 +689,34 @@ export type Database = {
         }
         Returns: boolean
       }
+      km: {
+        Args: { lat1: number; lat2: number; lng1: number; lng2: number }
+        Returns: number
+      }
+      log_action: {
+        Args: { _action: string; _details: string; _facility: string }
+        Returns: undefined
+      }
+      mark_all_read: { Args: never; Returns: undefined }
       my_facility_id: { Args: never; Returns: string }
+      notification_action: {
+        Args: { _action: string; _id: string }
+        Returns: string
+      }
+      notify: {
+        Args: {
+          _body: string
+          _facility: string
+          _key: string
+          _kind: string
+          _payload: Json
+          _title: string
+        }
+        Returns: undefined
+      }
+      run_automation: { Args: never; Returns: Json }
+      sim_today: { Args: never; Returns: string }
+      simulate_next_day: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "patient" | "facility"
