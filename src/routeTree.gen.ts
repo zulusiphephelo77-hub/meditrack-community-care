@@ -16,6 +16,10 @@ import { Route as PatientRouteImport } from './routes/patient'
 import { Route as PatientLoginRouteImport } from './routes/patient-login'
 import { Route as FacilityIndexRouteImport } from './routes/facility.index'
 import { Route as FacilityAlertsRouteImport } from './routes/facility.alerts'
+import { Route as FacilityAutomationRouteImport } from './routes/facility.automation'
+import { Route as FacilityCatalogueRouteImport } from './routes/facility.catalogue'
+import { Route as FacilityExpiryRouteImport } from './routes/facility.expiry'
+import { Route as FacilityInboxRouteImport } from './routes/facility.inbox'
 import { Route as FacilityMoreRouteImport } from './routes/facility.more'
 import { Route as FacilityOrdersRouteImport } from './routes/facility.orders'
 import { Route as FacilityReportsRouteImport } from './routes/facility.reports'
@@ -60,6 +64,26 @@ const FacilityIndexRoute = FacilityIndexRouteImport.update({
 const FacilityAlertsRoute = FacilityAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityAutomationRoute = FacilityAutomationRouteImport.update({
+  id: '/automation',
+  path: '/automation',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityCatalogueRoute = FacilityCatalogueRouteImport.update({
+  id: '/catalogue',
+  path: '/catalogue',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityExpiryRoute = FacilityExpiryRouteImport.update({
+  id: '/expiry',
+  path: '/expiry',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityInboxRoute = FacilityInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => FacilityRoute,
 } as any)
 const FacilityMoreRoute = FacilityMoreRouteImport.update({
@@ -121,6 +145,10 @@ export interface FileRoutesByFullPath {
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
   '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/automation': typeof FacilityAutomationRoute
+  '/facility/catalogue': typeof FacilityCatalogueRoute
+  '/facility/expiry': typeof FacilityExpiryRoute
+  '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
@@ -138,6 +166,10 @@ export interface FileRoutesByTo {
   '/facility-login': typeof FacilityLoginRoute
   '/patient-login': typeof PatientLoginRoute
   '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/automation': typeof FacilityAutomationRoute
+  '/facility/catalogue': typeof FacilityCatalogueRoute
+  '/facility/expiry': typeof FacilityExpiryRoute
+  '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
@@ -158,6 +190,10 @@ export interface FileRoutesById {
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
   '/facility/alerts': typeof FacilityAlertsRoute
+  '/facility/automation': typeof FacilityAutomationRoute
+  '/facility/catalogue': typeof FacilityCatalogueRoute
+  '/facility/expiry': typeof FacilityExpiryRoute
+  '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
@@ -179,6 +215,10 @@ export interface FileRouteTypes {
     | '/patient'
     | '/patient-login'
     | '/facility/alerts'
+    | '/facility/automation'
+    | '/facility/catalogue'
+    | '/facility/expiry'
+    | '/facility/inbox'
     | '/facility/more'
     | '/facility/orders'
     | '/facility/reports'
@@ -196,6 +236,10 @@ export interface FileRouteTypes {
     | '/facility-login'
     | '/patient-login'
     | '/facility/alerts'
+    | '/facility/automation'
+    | '/facility/catalogue'
+    | '/facility/expiry'
+    | '/facility/inbox'
     | '/facility/more'
     | '/facility/orders'
     | '/facility/reports'
@@ -215,6 +259,10 @@ export interface FileRouteTypes {
     | '/patient'
     | '/patient-login'
     | '/facility/alerts'
+    | '/facility/automation'
+    | '/facility/catalogue'
+    | '/facility/expiry'
+    | '/facility/inbox'
     | '/facility/more'
     | '/facility/orders'
     | '/facility/reports'
@@ -285,6 +333,34 @@ declare module '@tanstack/react-router' {
       path: '/alerts'
       fullPath: '/facility/alerts'
       preLoaderRoute: typeof FacilityAlertsRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/automation': {
+      id: '/facility/automation'
+      path: '/automation'
+      fullPath: '/facility/automation'
+      preLoaderRoute: typeof FacilityAutomationRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/catalogue': {
+      id: '/facility/catalogue'
+      path: '/catalogue'
+      fullPath: '/facility/catalogue'
+      preLoaderRoute: typeof FacilityCatalogueRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/expiry': {
+      id: '/facility/expiry'
+      path: '/expiry'
+      fullPath: '/facility/expiry'
+      preLoaderRoute: typeof FacilityExpiryRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/inbox': {
+      id: '/facility/inbox'
+      path: '/inbox'
+      fullPath: '/facility/inbox'
+      preLoaderRoute: typeof FacilityInboxRouteImport
       parentRoute: typeof FacilityRoute
     }
     '/facility/more': {
@@ -362,6 +438,10 @@ declare module '@tanstack/react-router' {
 
 interface FacilityRouteChildren {
   FacilityAlertsRoute: typeof FacilityAlertsRoute
+  FacilityAutomationRoute: typeof FacilityAutomationRoute
+  FacilityCatalogueRoute: typeof FacilityCatalogueRoute
+  FacilityExpiryRoute: typeof FacilityExpiryRoute
+  FacilityInboxRoute: typeof FacilityInboxRoute
   FacilityMoreRoute: typeof FacilityMoreRoute
   FacilityOrdersRoute: typeof FacilityOrdersRoute
   FacilityReportsRoute: typeof FacilityReportsRoute
@@ -371,6 +451,10 @@ interface FacilityRouteChildren {
 
 const FacilityRouteChildren: FacilityRouteChildren = {
   FacilityAlertsRoute: FacilityAlertsRoute,
+  FacilityAutomationRoute: FacilityAutomationRoute,
+  FacilityCatalogueRoute: FacilityCatalogueRoute,
+  FacilityExpiryRoute: FacilityExpiryRoute,
+  FacilityInboxRoute: FacilityInboxRoute,
   FacilityMoreRoute: FacilityMoreRoute,
   FacilityOrdersRoute: FacilityOrdersRoute,
   FacilityReportsRoute: FacilityReportsRoute,
