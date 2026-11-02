@@ -17,6 +17,7 @@ const STATUS_CLS: Record<string, string> = {
   pending: "bg-warning-soft text-warning-foreground",
   approved: "bg-primary-soft text-primary-deep",
   dispatched: "bg-primary-soft text-primary-deep",
+  packed: "bg-primary-soft text-primary-deep",
   received: "bg-success-soft text-success",
   rejected: "bg-destructive-soft text-destructive",
   sent: "bg-warning-soft text-warning-foreground",
@@ -159,13 +160,14 @@ function Orders() {
                 <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                   <Truck className="h-3.5 w-3.5" /> {name(t.from_facility_id)} <ArrowRight className="h-3 w-3" /> {name(t.to_facility_id)}
                 </p>
-                <p className="text-xs text-muted-foreground">Urgency: <span className="capitalize">{t.urgency}</span> · {fmtDate(t.created_at)}</p>
+                <p className="text-xs text-muted-foreground">{t.source === "auto_order" ? "Auto-order · " : t.source === "expiry_suggestion" ? "Expiry move · " : ""}Urgency: <span className="capitalize">{t.urgency}</span> · {fmtDate(t.created_at)}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {t.status === "pending" && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "approve" }), "Approved — stock moved")}>Approve</Act>}
                   {t.status === "pending" && (isFrom || isTo) && <Act danger onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "reject" }), "Rejected")}>Reject</Act>}
-                  {t.status === "approved" && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "dispatch" }), "Marked dispatched")}>Mark dispatched</Act>}
+                  {t.status === "approved" && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "pack" }), "Marked packed")}>Pack</Act>}
+                  {(t.status === "approved" || t.status === "packed") && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "dispatch" }), "Marked dispatched")}>Mark dispatched</Act>}
                   {t.status === "dispatched" && isTo && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "receive" }), "Marked received")}>Mark received</Act>}
-                  {!isFrom && !isTo && ["pending", "approved", "dispatched"].includes(t.status) && (
+                  {!isFrom && !isTo && ["pending", "approved", "packed", "dispatched"].includes(t.status) && (
                     <p className="text-xs text-muted-foreground">Waiting on {t.status === "dispatched" ? name(t.to_facility_id) : name(t.from_facility_id)}</p>
                   )}
                   {(isFrom || isTo) && t.status === "pending" && !isFrom && <p className="text-xs text-muted-foreground">Awaiting approval from {name(t.from_facility_id)}</p>}

@@ -3,14 +3,22 @@ import { distanceKm, spareQuantity, summarizeStock } from "./stock";
 
 export async function fetchNetwork() {
   const { data: u } = await supabase.auth.getUser();
-  const [facs, meds, batches, transfers, requests, history] = await Promise.all([
-    supabase.from("facilities").select("id, name, kind, district, lat, lng, user_id").order("name"),
+  const [facs, meds, batches, transfers, requests, history, clock, settings, notes, log, adjustments, readings] = await Promise.all([
+    supabase.from("facilities").select("id, code, name, kind, district, lat, lng, user_id").order("name"),
     supabase.from("medicines").select("id, name, condition, unit").order("name"),
-    supabase.from("stock_batches").select("id, facility_id, medicine_id, batch_number, quantity, max_capacity, avg_daily_use, expiry_date"),
+    supabase.from("stock_batches").select("id, facility_id, medicine_id, batch_number, quantity, max_capacity, avg_daily_use, expiry_date, storage, bin_location"),
     supabase.from("stock_transfers").select("*").order("created_at", { ascending: false }),
     supabase.from("transfer_requests").select("id, kind, status, created_at, to_facility_id, medicine_id, patients(full_name, patient_number)").order("created_at", { ascending: false }),
     supabase.from("transfer_history").select("*").order("created_at", { ascending: false }).limit(100),
+    supabase.from("sim_clock").select("offset_days").maybeSingle(),
+    supabase.from("facility_settings").select("*"),
+    supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100),
+    supabase.from("automation_log").select("*").order("created_at", { ascending: false }).limit(100),
+    supabase.from("stock_adjustments").select("*").order("created_at", { ascending: false }).limit(50),
+    supabase.from("cold_chain_readings").select("*").order("created_at", { ascending: false }).limit(60),
   ]);
+  const offset = clock.data?.offset_days ?? 0;
+  const today = new Date(Date.now() + offset * 86400000);
   const facilities = facs.data ?? [];
   const medicines = meds.data ?? [];
   const allBatches = batches.data ?? [];
@@ -20,7 +28,7 @@ export async function fetchNetwork() {
     medicines
       .map((m) => {
         const bs = allBatches.filter((b) => b.facility_id === f.id && b.medicine_id === m.id);
-        return { facility: f, medicine: m, batches: bs, stock: summarizeStock(bs) };
+        return { facility: f, medicine: m, batches: bs, stock: summarizeStock(bs, today) };
       })
       .filter((i) => i.batches.length > 0),
   );
@@ -38,6 +46,13 @@ export async function fetchNetwork() {
     });
 
   return {
+    today,
+    offset,
+    settings: settings.data ?? [],
+    notifications: notes.data ?? [],
+    log: log.data ?? [],
+    adjustments: adjustments.data ?? [],
+    readings: readings.data ?? [],
     me,
     facilities,
     medicines,
@@ -51,7 +66,8 @@ export async function fetchNetwork() {
 }
 
 export type Network = Awaited<ReturnType<typeof fetchNetwork>>;
-export const OPEN_TRANSFER = ["pending", "approved", "dispatched"];
+export const OPEN_TRANSFER = ["pending", "approved", "packed", "dispatched"];
+export const WAREHOUSE_CODE = "pmb-wh";
 export const OPEN_REQUEST = ["sent", "accepted", "ready"];
 
 export function inScope<T extends { facility: { id: string } }>(list: T[], scope: string) {

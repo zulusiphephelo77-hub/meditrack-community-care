@@ -20,8 +20,9 @@ export function daysUntil(date: string, today = new Date()) {
 export function summarizeStock(batches: Batch[], today = new Date()) {
   const usable = batches.filter((b) => daysUntil(b.expiry_date, today) >= 0);
   const quantity = usable.reduce((s, b) => s + b.quantity, 0);
-  const capacity = usable.reduce((s, b) => s + b.max_capacity, 0);
-  const dailyUse = usable.reduce((s, b) => s + Number(b.avg_daily_use), 0);
+  // Capacity and daily use are per medicine at a site; transferred-in batches copy them, so take the max.
+  const capacity = batches.reduce((m, b) => Math.max(m, b.max_capacity), 0);
+  const dailyUse = batches.reduce((m, b) => Math.max(m, Number(b.avg_daily_use)), 0);
   const soonest = usable
     .filter((b) => b.quantity > 0)
     .map((b) => b.expiry_date)
