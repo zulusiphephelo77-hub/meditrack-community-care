@@ -117,6 +117,38 @@ export type Database = {
           },
         ]
       }
+      device_actions: {
+        Row: {
+          created_at: string
+          facility_id: string
+          id: string
+          payload: Json
+          result_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          facility_id: string
+          id: string
+          payload: Json
+          result_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          facility_id?: string
+          id?: string
+          payload?: Json
+          result_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_actions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       facilities: {
         Row: {
           code: string
@@ -214,6 +246,170 @@ export type Database = {
           unit?: string
         }
         Relationships: []
+      }
+      mobile_clinics: {
+        Row: {
+          facility_id: string
+          id: string
+          lat: number
+          lng: number
+          name: string
+          status: string
+        }
+        Insert: {
+          facility_id: string
+          id?: string
+          lat: number
+          lng: number
+          name: string
+          status?: string
+        }
+        Update: {
+          facility_id?: string
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_clinics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mobile_requests: {
+        Row: {
+          created_at: string
+          id: string
+          medicine_id: string
+          patient_id: string
+          quantity: number
+          sms: string
+          status: string
+          stop_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          medicine_id: string
+          patient_id: string
+          quantity: number
+          sms?: string
+          status?: string
+          stop_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          medicine_id?: string
+          patient_id?: string
+          quantity?: number
+          sms?: string
+          status?: string
+          stop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_requests_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobile_requests_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobile_requests_stop_id_fkey"
+            columns: ["stop_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_stops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mobile_stock: {
+        Row: {
+          clinic_id: string
+          id: string
+          medicine_id: string
+          quantity: number
+        }
+        Insert: {
+          clinic_id: string
+          id?: string
+          medicine_id: string
+          quantity?: number
+        }
+        Update: {
+          clinic_id?: string
+          id?: string
+          medicine_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_stock_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobile_stock_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mobile_stops: {
+        Row: {
+          clinic_id: string
+          id: string
+          lat: number
+          lng: number
+          name: string
+          scheduled_at: string
+          sequence: number
+        }
+        Insert: {
+          clinic_id: string
+          id?: string
+          lat: number
+          lng: number
+          name: string
+          scheduled_at: string
+          sequence?: number
+        }
+        Update: {
+          clinic_id?: string
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+          scheduled_at?: string
+          sequence?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_stops_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -450,12 +646,14 @@ export type Database = {
       stock_transfers: {
         Row: {
           created_at: string
+          eta: string | null
           from_batch_id: string
           from_facility_id: string
           id: string
           medicine_id: string
           quantity: number
           requested_by_facility_id: string | null
+          required_by: string | null
           source: string
           status: string
           to_facility_id: string
@@ -464,12 +662,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          eta?: string | null
           from_batch_id: string
           from_facility_id: string
           id?: string
           medicine_id: string
           quantity: number
           requested_by_facility_id?: string | null
+          required_by?: string | null
           source?: string
           status?: string
           to_facility_id: string
@@ -478,12 +678,14 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          eta?: string | null
           from_batch_id?: string
           from_facility_id?: string
           id?: string
           medicine_id?: string
           quantity?: number
           requested_by_facility_id?: string | null
+          required_by?: string | null
           source?: string
           status?: string
           to_facility_id?: string
@@ -714,9 +916,21 @@ export type Database = {
         }
         Returns: undefined
       }
+      request_mobile_medicine: {
+        Args: { _medicine: string; _quantity: number; _stop: string }
+        Returns: string
+      }
       run_automation: { Args: never; Returns: Json }
       sim_today: { Args: never; Returns: string }
       simulate_next_day: { Args: never; Returns: Json }
+      sync_device_action: {
+        Args: { _id: string; _payload: Json }
+        Returns: string
+      }
+      update_mobile_request: {
+        Args: { _id: string; _status: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "patient" | "facility"

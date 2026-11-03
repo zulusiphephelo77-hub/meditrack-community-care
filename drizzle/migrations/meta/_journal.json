@@ -22,6 +22,13 @@
       "when": 1793510975697,
       "tag": "0002_automation_engine",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793684387217,
+      "tag": "0003_offline_orders_mobile_clinics",
+      "breakpoints": true
     }
   ]
 }
