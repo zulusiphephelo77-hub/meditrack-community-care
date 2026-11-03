@@ -23,6 +23,9 @@ function More() {
       <Link to="/facility/reports" className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-sm font-semibold">
         <BarChart3 className="h-4 w-4 text-primary" /> Reports & history
       </Link>
+      {([["/facility/automation", "Automated Ordering"], ["/facility/expiry", "Expiry & Transfer Management"], ["/facility/catalogue", "Warehouse Catalogue"], ["/facility/inbox", "Notifications & automatic actions"]] as const).map(([to, l]) => (
+        <Link key={to} to={to} className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-sm font-semibold">{l}</Link>
+      ))}
       <button onClick={async () => { await signOut(qc); navigate({ to: "/", replace: true }); }}
         className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card py-3 font-semibold text-destructive">
         <LogOut className="h-4 w-4" /> Sign out
