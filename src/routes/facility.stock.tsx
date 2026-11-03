@@ -59,7 +59,7 @@ function Stock() {
             {i.batches.map((b) => (
               <div key={b.id} className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Batch {b.batch_number} · {b.quantity}</span>
-                <span className={daysUntil(b.expiry_date) <= 90 ? "font-semibold text-warning-foreground" : "text-muted-foreground"}>Exp {fmtDate(b.expiry_date)}</span>
+                <span className={daysUntil(b.expiry_date, net.today) <= 90 ? "font-semibold text-warning-foreground" : "text-muted-foreground"}>Exp {fmtDate(b.expiry_date)}</span>
               </div>
             ))}
           </div>

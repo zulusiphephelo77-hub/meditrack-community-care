@@ -13,7 +13,7 @@ function Alerts() {
   const items = inScope(net.items, scope);
   const expiring = items.flatMap((i) =>
     i.batches
-      .filter((b) => b.quantity > 0 && daysUntil(b.expiry_date) <= EXPIRY_WARNING_DAYS)
+      .filter((b) => b.quantity > 0 && daysUntil(b.expiry_date, net.today) <= EXPIRY_WARNING_DAYS)
       .map((b) => ({ ...b, item: i })),
   ).sort((a, b) => a.expiry_date.localeCompare(b.expiry_date));
   const short = items.filter((i) => i.stock.status !== "in_stock");
@@ -25,7 +25,7 @@ function Alerts() {
         {expiring.length === 0 && <p className="text-sm text-muted-foreground">Nothing expiring in the next 90 days.</p>}
         <div className="space-y-2">
           {expiring.map((b) => {
-            const d = daysUntil(b.expiry_date);
+            const d = daysUntil(b.expiry_date, net.today);
             return (
               <Card key={b.id} className="py-3">
                 <p className="text-sm font-semibold">{b.item.medicine.name} · {b.quantity}</p>

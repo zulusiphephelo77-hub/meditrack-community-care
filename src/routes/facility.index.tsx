@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, BarChart3, Boxes, CalendarClock, Package, Truck, ClipboardList } from "lucide-react";
+import { AlertTriangle, BarChart3, Bot, Bell, Warehouse, RefreshCcw, Boxes, CalendarClock, Package, Truck, ClipboardList } from "lucide-react";
 import { Card, IconTile } from "@/components/medicare";
 import { inScope, OPEN_REQUEST, OPEN_TRANSFER } from "@/lib/network";
 import { FacilityHeader, useFacilityCtx } from "./facility";
@@ -31,8 +31,12 @@ function FacilityDashboard() {
         <div className="grid grid-cols-4 gap-2">
           <Quick to="/facility/stock" icon={Boxes} label="Stock & Inventory" />
           <Quick to="/facility/orders" icon={Truck} label="Orders & Deliveries" />
-          <Quick to="/facility/alerts" icon={CalendarClock} label="Expiry Alerts" />
+          <Quick to="/facility/expiry" icon={CalendarClock} label="Expiry Alerts" />
           <Quick to="/facility/reports" icon={BarChart3} label="Reports" />
+          <Quick to="/facility/automation" icon={Bot} label="Auto Ordering" />
+          <Quick to="/facility/expiry" icon={RefreshCcw} label="Expiry & Transfers" />
+          <Quick to="/facility/catalogue" icon={Warehouse} label="Warehouse Catalogue" />
+          <Quick to="/facility/inbox" icon={Bell} label="Inbox" />
         </div>
       </section>
       {net.shortages.length > 0 && (
