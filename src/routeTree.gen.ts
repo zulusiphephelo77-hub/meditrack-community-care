@@ -21,6 +21,7 @@ import { Route as FacilityCatalogueRouteImport } from './routes/facility.catalog
 import { Route as FacilityExpiryRouteImport } from './routes/facility.expiry'
 import { Route as FacilityInboxRouteImport } from './routes/facility.inbox'
 import { Route as FacilityMoreRouteImport } from './routes/facility.more'
+import { Route as FacilityOfflineRouteImport } from './routes/facility.offline'
 import { Route as FacilityOrdersRouteImport } from './routes/facility.orders'
 import { Route as FacilityReportsRouteImport } from './routes/facility.reports'
 import { Route as FacilityStockRouteImport } from './routes/facility.stock'
@@ -91,6 +92,11 @@ const FacilityMoreRoute = FacilityMoreRouteImport.update({
   path: '/more',
   getParentRoute: () => FacilityRoute,
 } as any)
+const FacilityOfflineRoute = FacilityOfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
+  getParentRoute: () => FacilityRoute,
+} as any)
 const FacilityOrdersRoute = FacilityOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/facility/expiry'
     | '/facility/inbox'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/facility/expiry'
     | '/facility/inbox'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/facility/expiry'
     | '/facility/inbox'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
@@ -370,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacilityMoreRouteImport
       parentRoute: typeof FacilityRoute
     }
+    '/facility/offline': {
+      id: '/facility/offline'
+      path: '/offline'
+      fullPath: '/facility/offline'
+      preLoaderRoute: typeof FacilityOfflineRouteImport
+      parentRoute: typeof FacilityRoute
+    }
     '/facility/orders': {
       id: '/facility/orders'
       path: '/orders'
@@ -443,6 +462,7 @@ interface FacilityRouteChildren {
   FacilityExpiryRoute: typeof FacilityExpiryRoute
   FacilityInboxRoute: typeof FacilityInboxRoute
   FacilityMoreRoute: typeof FacilityMoreRoute
+  FacilityOfflineRoute: typeof FacilityOfflineRoute
   FacilityOrdersRoute: typeof FacilityOrdersRoute
   FacilityReportsRoute: typeof FacilityReportsRoute
   FacilityStockRoute: typeof FacilityStockRoute
@@ -456,6 +476,7 @@ const FacilityRouteChildren: FacilityRouteChildren = {
   FacilityExpiryRoute: FacilityExpiryRoute,
   FacilityInboxRoute: FacilityInboxRoute,
   FacilityMoreRoute: FacilityMoreRoute,
+  FacilityOfflineRoute: FacilityOfflineRoute,
   FacilityOrdersRoute: FacilityOrdersRoute,
   FacilityReportsRoute: FacilityReportsRoute,
   FacilityStockRoute: FacilityStockRoute,
