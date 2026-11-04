@@ -9,7 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/facility")({
   ssr: false,
-  beforeLoad: () => requireRole("facility"),
+  beforeLoad: ({ location }) => {
+    // Offline mode exposes only a previously saved device workspace, never server privileges.
+    if (location.pathname === '/facility/offline' && (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true')) return;
+    return requireRole("facility");
+  },
   head: () => ({ meta: [{ title: "Facility Dashboard — MediCare Sync" }, { name: "robots", content: "noindex" }] }),
   component: FacilityLayout,
 });
@@ -25,6 +29,22 @@ function FacilityLayout() {
   const { data: net } = useNetwork();
   const qc = useQueryClient();
   const [scope, setScope] = useState<string>("");
+  const [cached, setCached] = useState<Network>();
+  useEffect(() => {
+    const hydrate = async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user.id;
+      if (!user) return;
+      const key = `medicare-network:${user}`;
+      if (net?.me) localStorage.setItem(key, JSON.stringify(net));
+      else {
+        const value = localStorage.getItem(key);
+        if (value) { const parsed = JSON.parse(value); setCached({ ...parsed, today: new Date(parsed.today) }); }
+      }
+    };
+    void hydrate();
+  }, [net]);
+  const workspace = net ?? cached;
   useEffect(() => {
     if (!scope && net?.me) setScope(net.me.id);
   }, [net, scope]);
@@ -33,6 +53,7 @@ function FacilityLayout() {
   useEffect(() => {
     let alive = true;
     const tick = async () => {
+      if (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true') return;
       await supabase.rpc("run_automation");
       if (alive) qc.invalidateQueries({ queryKey: ["network"] });
     };
@@ -45,7 +66,7 @@ function FacilityLayout() {
   }, [qc]);
 
   return (
-    <FacilityCtx.Provider value={{ net, scope: scope || "all", setScope }}>
+    <FacilityCtx.Provider value={{ net: workspace, scope: scope || "all", setScope }}>
       <div className="theme-facility min-h-screen bg-background pb-20 md:pb-0">
         <PrototypeBanner />
         <BottomNav
@@ -58,7 +79,7 @@ function FacilityLayout() {
           ]}
         />
         <main className="mx-auto max-w-3xl px-5 py-5">
-          {net ? <Outlet /> : <p className="text-muted-foreground">Loading…</p>}
+          {workspace ? <Outlet /> : <p className="text-muted-foreground">Loading… Connect once and sign in to save this device workspace.</p>}
         </main>
       </div>
     </FacilityCtx.Provider>

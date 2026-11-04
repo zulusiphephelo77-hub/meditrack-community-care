@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { Card, fmtDate } from "@/components/medicare";
@@ -14,6 +14,7 @@ function More() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">More</h1>
+      <Link to="/patient/mobile" className="block rounded-lg border border-border bg-card p-4 font-semibold text-primary">Mobile Medicine Near Me</Link>
       {p && (
         <Card className="space-y-1 text-sm">
           <p className="text-lg font-semibold">{p.full_name}</p>

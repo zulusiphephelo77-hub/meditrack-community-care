@@ -25,6 +25,7 @@ function Dashboard() {
   return (
     <div className="space-y-4">
       <Logo />
+      <Link to="/patient/mobile" className="flex items-center justify-between rounded-lg bg-primary-soft p-4 font-semibold text-primary-deep">Mobile Medicine Near Me <ChevronRight className="h-5 w-5" /></Link>
       <div>
         <h1 className="text-2xl font-bold">Hello, {patient.full_name.split(" ")[0]}!</h1>
         <p className="text-sm text-muted-foreground">Patient No: {patient.patient_number}</p>

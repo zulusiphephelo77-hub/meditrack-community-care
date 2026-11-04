@@ -20,12 +20,15 @@ import { Route as FacilityAutomationRouteImport } from './routes/facility.automa
 import { Route as FacilityCatalogueRouteImport } from './routes/facility.catalogue'
 import { Route as FacilityExpiryRouteImport } from './routes/facility.expiry'
 import { Route as FacilityInboxRouteImport } from './routes/facility.inbox'
+import { Route as FacilityMobileRouteImport } from './routes/facility.mobile'
 import { Route as FacilityMoreRouteImport } from './routes/facility.more'
+import { Route as FacilityOfflineRouteImport } from './routes/facility.offline'
 import { Route as FacilityOrdersRouteImport } from './routes/facility.orders'
 import { Route as FacilityReportsRouteImport } from './routes/facility.reports'
 import { Route as FacilityStockRouteImport } from './routes/facility.stock'
 import { Route as PatientIndexRouteImport } from './routes/patient.index'
 import { Route as PatientAppointmentsRouteImport } from './routes/patient.appointments'
+import { Route as PatientMobileRouteImport } from './routes/patient.mobile'
 import { Route as PatientMoreRouteImport } from './routes/patient.more'
 import { Route as PatientTransferRouteImport } from './routes/patient.transfer'
 import { Route as PatientMedicinesIndexRouteImport } from './routes/patient.medicines.index'
@@ -86,9 +89,19 @@ const FacilityInboxRoute = FacilityInboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => FacilityRoute,
 } as any)
+const FacilityMobileRoute = FacilityMobileRouteImport.update({
+  id: '/mobile',
+  path: '/mobile',
+  getParentRoute: () => FacilityRoute,
+} as any)
 const FacilityMoreRoute = FacilityMoreRouteImport.update({
   id: '/more',
   path: '/more',
+  getParentRoute: () => FacilityRoute,
+} as any)
+const FacilityOfflineRoute = FacilityOfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
   getParentRoute: () => FacilityRoute,
 } as any)
 const FacilityOrdersRoute = FacilityOrdersRouteImport.update({
@@ -114,6 +127,11 @@ const PatientIndexRoute = PatientIndexRouteImport.update({
 const PatientAppointmentsRoute = PatientAppointmentsRouteImport.update({
   id: '/appointments',
   path: '/appointments',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientMobileRoute = PatientMobileRouteImport.update({
+  id: '/mobile',
+  path: '/mobile',
   getParentRoute: () => PatientRoute,
 } as any)
 const PatientMoreRoute = PatientMoreRouteImport.update({
@@ -149,11 +167,14 @@ export interface FileRoutesByFullPath {
   '/facility/catalogue': typeof FacilityCatalogueRoute
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
+  '/facility/mobile': typeof FacilityMobileRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
+  '/patient/mobile': typeof PatientMobileRoute
   '/patient/more': typeof PatientMoreRoute
   '/patient/transfer': typeof PatientTransferRoute
   '/facility/': typeof FacilityIndexRoute
@@ -170,11 +191,14 @@ export interface FileRoutesByTo {
   '/facility/catalogue': typeof FacilityCatalogueRoute
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
+  '/facility/mobile': typeof FacilityMobileRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
+  '/patient/mobile': typeof PatientMobileRoute
   '/patient/more': typeof PatientMoreRoute
   '/patient/transfer': typeof PatientTransferRoute
   '/facility': typeof FacilityIndexRoute
@@ -194,11 +218,14 @@ export interface FileRoutesById {
   '/facility/catalogue': typeof FacilityCatalogueRoute
   '/facility/expiry': typeof FacilityExpiryRoute
   '/facility/inbox': typeof FacilityInboxRoute
+  '/facility/mobile': typeof FacilityMobileRoute
   '/facility/more': typeof FacilityMoreRoute
+  '/facility/offline': typeof FacilityOfflineRoute
   '/facility/orders': typeof FacilityOrdersRoute
   '/facility/reports': typeof FacilityReportsRoute
   '/facility/stock': typeof FacilityStockRoute
   '/patient/appointments': typeof PatientAppointmentsRoute
+  '/patient/mobile': typeof PatientMobileRoute
   '/patient/more': typeof PatientMoreRoute
   '/patient/transfer': typeof PatientTransferRoute
   '/facility/': typeof FacilityIndexRoute
@@ -219,11 +246,14 @@ export interface FileRouteTypes {
     | '/facility/catalogue'
     | '/facility/expiry'
     | '/facility/inbox'
+    | '/facility/mobile'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
+    | '/patient/mobile'
     | '/patient/more'
     | '/patient/transfer'
     | '/facility/'
@@ -240,11 +270,14 @@ export interface FileRouteTypes {
     | '/facility/catalogue'
     | '/facility/expiry'
     | '/facility/inbox'
+    | '/facility/mobile'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
+    | '/patient/mobile'
     | '/patient/more'
     | '/patient/transfer'
     | '/facility'
@@ -263,11 +296,14 @@ export interface FileRouteTypes {
     | '/facility/catalogue'
     | '/facility/expiry'
     | '/facility/inbox'
+    | '/facility/mobile'
     | '/facility/more'
+    | '/facility/offline'
     | '/facility/orders'
     | '/facility/reports'
     | '/facility/stock'
     | '/patient/appointments'
+    | '/patient/mobile'
     | '/patient/more'
     | '/patient/transfer'
     | '/facility/'
@@ -363,11 +399,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacilityInboxRouteImport
       parentRoute: typeof FacilityRoute
     }
+    '/facility/mobile': {
+      id: '/facility/mobile'
+      path: '/mobile'
+      fullPath: '/facility/mobile'
+      preLoaderRoute: typeof FacilityMobileRouteImport
+      parentRoute: typeof FacilityRoute
+    }
     '/facility/more': {
       id: '/facility/more'
       path: '/more'
       fullPath: '/facility/more'
       preLoaderRoute: typeof FacilityMoreRouteImport
+      parentRoute: typeof FacilityRoute
+    }
+    '/facility/offline': {
+      id: '/facility/offline'
+      path: '/offline'
+      fullPath: '/facility/offline'
+      preLoaderRoute: typeof FacilityOfflineRouteImport
       parentRoute: typeof FacilityRoute
     }
     '/facility/orders': {
@@ -403,6 +453,13 @@ declare module '@tanstack/react-router' {
       path: '/appointments'
       fullPath: '/patient/appointments'
       preLoaderRoute: typeof PatientAppointmentsRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/mobile': {
+      id: '/patient/mobile'
+      path: '/mobile'
+      fullPath: '/patient/mobile'
+      preLoaderRoute: typeof PatientMobileRouteImport
       parentRoute: typeof PatientRoute
     }
     '/patient/more': {
@@ -442,7 +499,9 @@ interface FacilityRouteChildren {
   FacilityCatalogueRoute: typeof FacilityCatalogueRoute
   FacilityExpiryRoute: typeof FacilityExpiryRoute
   FacilityInboxRoute: typeof FacilityInboxRoute
+  FacilityMobileRoute: typeof FacilityMobileRoute
   FacilityMoreRoute: typeof FacilityMoreRoute
+  FacilityOfflineRoute: typeof FacilityOfflineRoute
   FacilityOrdersRoute: typeof FacilityOrdersRoute
   FacilityReportsRoute: typeof FacilityReportsRoute
   FacilityStockRoute: typeof FacilityStockRoute
@@ -455,7 +514,9 @@ const FacilityRouteChildren: FacilityRouteChildren = {
   FacilityCatalogueRoute: FacilityCatalogueRoute,
   FacilityExpiryRoute: FacilityExpiryRoute,
   FacilityInboxRoute: FacilityInboxRoute,
+  FacilityMobileRoute: FacilityMobileRoute,
   FacilityMoreRoute: FacilityMoreRoute,
+  FacilityOfflineRoute: FacilityOfflineRoute,
   FacilityOrdersRoute: FacilityOrdersRoute,
   FacilityReportsRoute: FacilityReportsRoute,
   FacilityStockRoute: FacilityStockRoute,
@@ -468,6 +529,7 @@ const FacilityRouteWithChildren = FacilityRoute._addFileChildren(
 
 interface PatientRouteChildren {
   PatientAppointmentsRoute: typeof PatientAppointmentsRoute
+  PatientMobileRoute: typeof PatientMobileRoute
   PatientMoreRoute: typeof PatientMoreRoute
   PatientTransferRoute: typeof PatientTransferRoute
   PatientIndexRoute: typeof PatientIndexRoute
@@ -477,6 +539,7 @@ interface PatientRouteChildren {
 
 const PatientRouteChildren: PatientRouteChildren = {
   PatientAppointmentsRoute: PatientAppointmentsRoute,
+  PatientMobileRoute: PatientMobileRoute,
   PatientMoreRoute: PatientMoreRoute,
   PatientTransferRoute: PatientTransferRoute,
   PatientIndexRoute: PatientIndexRoute,
