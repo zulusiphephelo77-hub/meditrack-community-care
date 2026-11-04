@@ -1,0 +1,1 @@
+export function pageHead(title:string,description:string){return {meta:[{title:`${title} — MediCare Sync`},{name:'description',content:description},{property:'og:title',content:`${title} — MediCare Sync`},{property:'og:description',content:description},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]};}
