@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter, rootRouteId } from "@tanstack/react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+vi.mock('@/lib/pwa', () => ({ registerOfflineApp: vi.fn() }));
 
 import { routeTree } from "@/routeTree.gen";
 
