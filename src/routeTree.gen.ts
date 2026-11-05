@@ -14,6 +14,7 @@ import { Route as FacilityRouteImport } from './routes/facility'
 import { Route as FacilityLoginRouteImport } from './routes/facility-login'
 import { Route as PatientRouteImport } from './routes/patient'
 import { Route as PatientLoginRouteImport } from './routes/patient-login'
+import { Route as ReportRouteImport } from './routes/report'
 import { Route as FacilityIndexRouteImport } from './routes/facility.index'
 import { Route as FacilityAlertsRouteImport } from './routes/facility.alerts'
 import { Route as FacilityAutomationRouteImport } from './routes/facility.automation'
@@ -57,6 +58,11 @@ const PatientRoute = PatientRouteImport.update({
 const PatientLoginRoute = PatientLoginRouteImport.update({
   id: '/patient-login',
   path: '/patient-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FacilityIndexRoute = FacilityIndexRouteImport.update({
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/facility-login': typeof FacilityLoginRoute
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
+  '/report': typeof ReportRoute
   '/facility/alerts': typeof FacilityAlertsRoute
   '/facility/automation': typeof FacilityAutomationRoute
   '/facility/catalogue': typeof FacilityCatalogueRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/facility-login': typeof FacilityLoginRoute
   '/patient-login': typeof PatientLoginRoute
+  '/report': typeof ReportRoute
   '/facility/alerts': typeof FacilityAlertsRoute
   '/facility/automation': typeof FacilityAutomationRoute
   '/facility/catalogue': typeof FacilityCatalogueRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/facility-login': typeof FacilityLoginRoute
   '/patient': typeof PatientRouteWithChildren
   '/patient-login': typeof PatientLoginRoute
+  '/report': typeof ReportRoute
   '/facility/alerts': typeof FacilityAlertsRoute
   '/facility/automation': typeof FacilityAutomationRoute
   '/facility/catalogue': typeof FacilityCatalogueRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/facility-login'
     | '/patient'
     | '/patient-login'
+    | '/report'
     | '/facility/alerts'
     | '/facility/automation'
     | '/facility/catalogue'
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/'
     | '/facility-login'
     | '/patient-login'
+    | '/report'
     | '/facility/alerts'
     | '/facility/automation'
     | '/facility/catalogue'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/facility-login'
     | '/patient'
     | '/patient-login'
+    | '/report'
     | '/facility/alerts'
     | '/facility/automation'
     | '/facility/catalogue'
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   FacilityLoginRoute: typeof FacilityLoginRoute
   PatientRoute: typeof PatientRouteWithChildren
   PatientLoginRoute: typeof PatientLoginRoute
+  ReportRoute: typeof ReportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       path: '/patient-login'
       fullPath: '/patient-login'
       preLoaderRoute: typeof PatientLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facility/': {
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   FacilityLoginRoute: FacilityLoginRoute,
   PatientRoute: PatientRouteWithChildren,
   PatientLoginRoute: PatientLoginRoute,
+  ReportRoute: ReportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
