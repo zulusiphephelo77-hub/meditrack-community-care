@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, ChevronRight, ShieldCheck, Truck, Users, UserRound } from "lucide-react";
+import { Building2, ChevronRight, FileText, House, ShieldCheck, Truck, Users, UserRound } from "lucide-react";
 import { Logo, PrototypeBanner } from "@/components/medicare";
 
 export const Route = createFileRoute("/")({
@@ -20,6 +20,18 @@ function Landing() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-hero">
       <PrototypeBanner />
+      <nav className="border-b border-border bg-card/80 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-3">
+          <Link to="/" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+            <House className="h-4 w-4 text-primary" />
+            Home
+          </Link>
+          <Link to="/report" className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <FileText className="h-4 w-4" />
+            Project Report
+          </Link>
+        </div>
+      </nav>
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 pt-10 pb-8">
         <Logo tagline className="mb-8 scale-110 origin-left" />
         <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
