@@ -11,7 +11,7 @@ export function usePatient() {
   return useQuery({ queryKey: ["me-patient"], queryFn: fetchMyPatient });
 }
 export function useMyMedicines(homeId?: string) {
-  return useQuery({ queryKey: ["my-meds", homeId], queryFn: () => fetchPatientMedicines(homeId!), enabled: !!homeId });
+  return useQuery({ queryKey: ["my-meds", homeId], queryFn: () => { if (!homeId) throw new Error("Patient facility is unavailable"); return fetchPatientMedicines(homeId); }, enabled: !!homeId });
 }
 
 function Dashboard() {
