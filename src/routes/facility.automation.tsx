@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/automation")({ component: Automation });
+export const Route = createFileRoute("/facility/automation")({ head: () => pageHead('Automated Ordering', 'Facility reorder thresholds and automatic warehouse orders.'), component: Automation });
 
 function Automation() {
   const { net } = useFacilityCtx();

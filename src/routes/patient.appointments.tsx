@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -6,7 +7,7 @@ import { Card, IconTile, fmtDate, fmtTime } from "@/components/medicare";
 import { fetchAppointments } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/patient/appointments")({ component: Appointments });
+export const Route = createFileRoute("/patient/appointments")({ head: () => pageHead('My Appointments', 'Upcoming and past care appointments.'), component: Appointments });
 
 function Appointments() {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");

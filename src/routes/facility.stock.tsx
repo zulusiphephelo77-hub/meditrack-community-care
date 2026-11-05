@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search } from "lucide-react";
@@ -7,7 +8,7 @@ import { inScope } from "@/lib/network";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/stock")({ component: Stock });
+export const Route = createFileRoute("/facility/stock")({ head: () => pageHead('Stock & Inventory', 'Medicine stock levels and batch expiry dates.'), component: Stock });
 
 const FILTERS = ["All", "Low Stock", "Expiring Soon"] as const;
 

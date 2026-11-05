@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useMyMedicines, usePatient } from "./patient.index";
 
 export const Route = createFileRoute("/patient/transfer")({
+  head: () => pageHead('Medicine Transfer', 'Medicine transcripts and hospital transfer requests.'),
   validateSearch: (s: Record<string, unknown>) => ({ medicineId: typeof s["medicineId"] === "string" ? s["medicineId"] : undefined }),
   component: TransferPage,
 });

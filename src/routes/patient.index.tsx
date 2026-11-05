@@ -1,16 +1,17 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, CalendarDays, ChevronRight, Pill } from "lucide-react";
 import { Card, IconTile, Logo, StatusBadge, fmtDate, fmtTime } from "@/components/medicare";
 import { fetchAppointments, fetchMyPatient, fetchPatientMedicines } from "@/lib/queries";
 
-export const Route = createFileRoute("/patient/")({ component: Dashboard });
+export const Route = createFileRoute("/patient/")({ head: () => pageHead('My Care', 'Your appointments, medicine availability and collection requests.'), component: Dashboard });
 
 export function usePatient() {
   return useQuery({ queryKey: ["me-patient"], queryFn: fetchMyPatient });
 }
 export function useMyMedicines(homeId?: string) {
-  return useQuery({ queryKey: ["my-meds", homeId], queryFn: () => fetchPatientMedicines(homeId!), enabled: !!homeId });
+  return useQuery({ queryKey: ["my-meds", homeId], queryFn: () => { if (!homeId) throw new Error("Patient facility is unavailable"); return fetchPatientMedicines(homeId); }, enabled: !!homeId });
 }
 
 function Dashboard() {

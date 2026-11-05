@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
@@ -5,7 +6,7 @@ import { Card, fmtDate } from "@/components/medicare";
 import { signOut } from "@/lib/role-guard";
 import { usePatient } from "./patient.index";
 
-export const Route = createFileRoute("/patient/more")({ component: More });
+export const Route = createFileRoute("/patient/more")({ head: () => pageHead('Patient Account', 'Your care details and mobile medicine collection.'), component: More });
 
 function More() {
   const { data: p } = usePatient();

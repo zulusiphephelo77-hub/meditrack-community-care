@@ -1,9 +1,10 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Pill } from "lucide-react";
 import { Card, IconTile, StatusBadge } from "@/components/medicare";
 import { useMyMedicines, usePatient } from "./patient.index";
 
-export const Route = createFileRoute("/patient/medicines/")({ component: Medicines });
+export const Route = createFileRoute("/patient/medicines/")({ head: () => pageHead('My Medicines', 'Your prescribed medicines and local availability.'), component: Medicines });
 
 function Medicines() {
   const { data: patient } = usePatient();

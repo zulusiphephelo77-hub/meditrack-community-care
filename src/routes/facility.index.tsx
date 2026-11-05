@@ -1,10 +1,11 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertTriangle, BarChart3, Bot, Bell, Warehouse, RefreshCcw, Boxes, CalendarClock, Package, Truck, ClipboardList } from "lucide-react";
 import { Card, IconTile } from "@/components/medicare";
 import { inScope, OPEN_REQUEST, OPEN_TRANSFER } from "@/lib/network";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/")({ component: FacilityDashboard });
+export const Route = createFileRoute("/facility/")({ head: () => pageHead('Facility Dashboard', 'Stock levels, expiry alerts and pending orders across the care network.'), component: FacilityDashboard });
 
 function FacilityDashboard() {
   const { net, scope } = useFacilityCtx();

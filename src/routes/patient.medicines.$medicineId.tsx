@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { fetchMedicineAcrossFacilities } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { usePatient } from "./patient.index";
 
-export const Route = createFileRoute("/patient/medicines/$medicineId")({ component: MedicineDetails });
+export const Route = createFileRoute("/patient/medicines/$medicineId")({ head: () => pageHead('Medicine Details', 'Medicine availability and nearby collection options.'), component: MedicineDetails });
 
 function MedicineDetails() {
   const { medicineId } = Route.useParams();

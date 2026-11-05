@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Bell, Boxes, LayoutDashboard, MoreHorizontal, Truck } from "lucide-react";
@@ -9,9 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/facility")({
   ssr: false,
-  beforeLoad: ({ location }) => {
+  beforeLoad: async ({ location }) => {
     // Offline mode exposes only a previously saved device workspace, never server privileges.
-    if (location.pathname === '/facility/offline' && (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true')) return;
+    if (location.pathname === '/facility/offline' && (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true')) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user.id && localStorage.getItem('medicare-facility-session') === data.session.user.id) return;
+      throw redirect({ to: '/facility-login' });
+    }
     return requireRole("facility");
   },
   head: () => ({ meta: [{ title: "Facility Dashboard — MediCare Sync" }, { name: "robots", content: "noindex" }] }),
@@ -21,12 +25,19 @@ export const Route = createFileRoute("/facility")({
 type Ctx = { net: Network | undefined; scope: string; setScope: (s: string) => void };
 const FacilityCtx = createContext<Ctx>({ net: undefined, scope: "all", setScope: () => {} });
 export const useFacilityCtx = () => useContext(FacilityCtx);
-export const useNetwork = () => useQuery({ queryKey: ["network"], queryFn: fetchNetwork });
+export const useNetwork = (enabled = true) => useQuery({ queryKey: ["network"], queryFn: fetchNetwork, enabled });
 
 export const ENGINE_INTERVAL_MS = 30_000;
 
 function FacilityLayout() {
-  const { data: net } = useNetwork();
+  const [connected, setConnected] = useState(true);
+  useEffect(() => {
+    const update = () => setConnected(navigator.onLine && localStorage.getItem('medicare-manual-offline') !== 'true');
+    update();
+    window.addEventListener('online', update); window.addEventListener('offline', update); window.addEventListener('medicare-offline-change', update);
+    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); window.removeEventListener('medicare-offline-change', update); };
+  }, []);
+  const { data: net } = useNetwork(connected);
   const qc = useQueryClient();
   const [scope, setScope] = useState<string>("");
   const [cached, setCached] = useState<Network>();
@@ -36,15 +47,19 @@ function FacilityLayout() {
       const user = data.session?.user.id;
       if (!user) return;
       const key = `medicare-network:${user}`;
-      if (net?.me) localStorage.setItem(key, JSON.stringify(net));
+      if (net?.me && net.me.user_id === user) {
+        // Cache stock only: never persist patient requests, notifications or audit records.
+        const safe = { ...net, requests: [], notifications: [], history: [], log: [], adjustments: [], readings: [] };
+        localStorage.setItem(key, JSON.stringify(safe));
+      }
       else {
         const value = localStorage.getItem(key);
-        if (value) { const parsed = JSON.parse(value); setCached({ ...parsed, today: new Date(parsed.today) }); }
+        if (value) { try { const parsed = JSON.parse(value); if (parsed.me?.user_id === user) setCached({ ...parsed, requests: [], notifications: [], history: [], log: [], adjustments: [], readings: [], today: new Date(parsed.today) }); } catch { localStorage.removeItem(key); } }
       }
     };
     void hydrate();
   }, [net]);
-  const workspace = net ?? cached;
+  const workspace = net?.me ? net : cached;
   useEffect(() => {
     if (!scope && net?.me) setScope(net.me.id);
   }, [net, scope]);
