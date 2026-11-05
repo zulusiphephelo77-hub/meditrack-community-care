@@ -1,0 +1,1 @@
+ALTER POLICY mobile_requests_read ON public.mobile_requests USING (patient_id = public.current_patient_id() OR EXISTS (SELECT 1 FROM public.mobile_stops s JOIN public.mobile_clinics c ON c.id = s.clinic_id JOIN public.facilities f ON f.id = c.facility_id WHERE s.id = mobile_requests.stop_id AND f.user_id = auth.uid()));

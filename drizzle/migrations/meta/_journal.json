@@ -29,6 +29,13 @@
       "when": 1793684387217,
       "tag": "0003_offline_orders_mobile_clinics",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793867645611,
+      "tag": "0004_scope_mobile_request_reads",
+      "breakpoints": true
     }
   ]
 }
