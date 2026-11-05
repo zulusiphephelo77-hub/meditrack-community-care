@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { inScope, OPEN_REQUEST } from "@/lib/network";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/orders")({ component: Orders });
+export const Route = createFileRoute("/facility/orders")({ head: () => pageHead('Orders & Deliveries', 'Stock transfers and patient collection requests.'), component: Orders });
 
 type Draft = { from: string; to: string; medicine: string; batch: string; quantity: number; urgency: string };
 

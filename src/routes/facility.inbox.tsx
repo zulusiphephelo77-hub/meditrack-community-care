@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/inbox")({ component: Inbox });
+export const Route = createFileRoute("/facility/inbox")({ head: () => pageHead('Facility Notifications', 'Notifications and automatic stock actions.'), component: Inbox });
 
 const ICON = { expiry_suggestion: CalendarClock, cold_chain: Thermometer, auto_order: Truck, clinic_order: Truck } as Record<string, typeof Info>;
 

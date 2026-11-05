@@ -1,9 +1,10 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { History } from "lucide-react";
 import { Card, fmtDate, fmtTime } from "@/components/medicare";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/reports")({ component: Reports });
+export const Route = createFileRoute("/facility/reports")({ head: () => pageHead('Facility Reports', 'Stock transfer history and facility activity.'), component: Reports });
 
 function Reports() {
   const { net, scope } = useFacilityCtx();

@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { StatusPill } from "./facility.orders";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/catalogue")({ component: Catalogue });
+export const Route = createFileRoute("/facility/catalogue")({ head: () => pageHead('Warehouse Catalogue', 'Warehouse batches, stock counts and incoming orders.'), component: Catalogue });
 
 function Catalogue() {
   const { net } = useFacilityCtx();

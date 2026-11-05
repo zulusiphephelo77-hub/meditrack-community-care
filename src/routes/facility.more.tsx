@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, LogOut } from "lucide-react";
@@ -5,7 +6,7 @@ import { Card } from "@/components/medicare";
 import { signOut } from "@/lib/role-guard";
 import { useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/more")({ component: More });
+export const Route = createFileRoute("/facility/more")({ head: () => pageHead('Facility Tools', 'Offline orders, mobile clinics and facility account tools.'), component: More });
 
 function More() {
   const { net } = useFacilityCtx();

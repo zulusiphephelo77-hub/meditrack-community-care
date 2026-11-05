@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { Card, fmtDate } from "@/components/medicare";
@@ -5,7 +6,7 @@ import { inScope } from "@/lib/network";
 import { daysUntil, EXPIRY_WARNING_DAYS } from "@/lib/stock";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/alerts")({ component: Alerts });
+export const Route = createFileRoute("/facility/alerts")({ head: () => pageHead('Stock Alerts', 'Low medicine stock and approaching expiry alerts.'), component: Alerts });
 
 function Alerts() {
   const { net, scope } = useFacilityCtx();

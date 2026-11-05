@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { daysUntil } from "@/lib/stock";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
-export const Route = createFileRoute("/facility/expiry")({ component: ExpiryPage });
+export const Route = createFileRoute("/facility/expiry")({ head: () => pageHead('Expiry & Transfers', 'Expiring batches and stock redistribution suggestions.'), component: ExpiryPage });
 
 export function monthsLeft(days: number) {
   return Math.max(0, Math.round((days / 30.4) * 10) / 10);
