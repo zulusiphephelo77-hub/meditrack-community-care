@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, ChevronRight, FileText, House, ShieldCheck, Truck, Users, UserRound } from "lucide-react";
+import { ArrowRight, Building2, ChevronRight, FileText, House, ShieldCheck, Truck, Users, UserRound } from "lucide-react";
 import { Logo, PrototypeBanner } from "@/components/medicare";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -59,6 +60,20 @@ function Landing() {
             <ChevronRight className="absolute right-5 bottom-6 h-6 w-6 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
+
+        <section className="mt-8 border-y border-border py-6" aria-labelledby="design-challenge">
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Design Challenge</p>
+          <h2 id="design-challenge" className="mt-2 max-w-2xl text-xl font-semibold leading-snug">
+            How might the healthcare supply chain ensure that essential medicines are always available at clinics while
+            reducing waste, delivery delays, and inventory inaccuracies?
+          </h2>
+          <Button asChild className="mt-4">
+            <Link to="/report">
+              View Project Report
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        </section>
 
         <div className="mt-10 grid grid-cols-3 gap-3 text-center text-xs text-muted-foreground">
           <div className="flex flex-col items-center gap-1"><ShieldCheck className="h-5 w-5 text-patient" />Better access</div>
