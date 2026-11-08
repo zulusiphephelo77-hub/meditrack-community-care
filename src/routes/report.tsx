@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Building2, ClipboardCheck, FileText, HeartPulse, PackageCheck, ShieldCheck, Truck, Users, Warehouse } from "lucide-react";
 import { Logo, PrototypeBanner, StatusBadge } from "@/components/medicare";
 import { statusLabel, type StockStatus } from "@/lib/stock";
+import { ReportSections } from "@/components/report-sections";
 
 export const Route = createFileRoute("/report")({
   head: () =>
@@ -125,6 +126,8 @@ function Report() {
             </li>
           </ul>
         </section>
+
+        <ReportSections />
 
         <section className="border-b border-border py-7" aria-labelledby="evaluation">
           <h2 id="evaluation" className="text-lg font-bold">What a future evaluation should test</h2>
