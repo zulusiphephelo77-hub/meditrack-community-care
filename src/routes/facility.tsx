@@ -37,7 +37,7 @@ function FacilityLayout() {
     window.addEventListener('online', update); window.addEventListener('offline', update); window.addEventListener('medicare-offline-change', update);
     return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); window.removeEventListener('medicare-offline-change', update); };
   }, []);
-  const { data: net } = useNetwork(connected);
+  const { data: net, error: netError, isLoading, refetch } = useNetwork(connected);
   const qc = useQueryClient();
   const [scope, setScope] = useState<string>("");
   const [cached, setCached] = useState<Network>();
@@ -94,7 +94,17 @@ function FacilityLayout() {
           ]}
         />
         <main className="mx-auto max-w-3xl px-5 py-5">
-          {workspace ? <Outlet /> : <p className="text-muted-foreground">Loading… Connect once and sign in to save this device workspace.</p>}
+          {workspace ? <Outlet /> : netError ? (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4 text-sm">
+              <p className="font-semibold text-destructive">Stock data could not be loaded.</p>
+              <p className="text-muted-foreground">{(netError as Error).message}</p>
+              <button onClick={() => void refetch()} className="rounded-lg bg-primary px-3 py-2 font-semibold text-primary-foreground">Try again</button>
+            </div>
+          ) : !isLoading && net && !net.me ? (
+            <p className="text-sm text-muted-foreground">You are signed in, but this account is not linked to a facility. Sign out and sign in again with a demo facility.</p>
+          ) : (
+            <p className="text-muted-foreground">Loading… Connect once and sign in to save this device workspace.</p>
+          )}
         </main>
       </div>
     </FacilityCtx.Provider>
