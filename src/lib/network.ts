@@ -4,7 +4,7 @@ import { distanceKm, spareQuantity, summarizeStock } from "./stock";
 export async function fetchNetwork() {
   const { data: u } = await supabase.auth.getUser();
   const [facs, meds, batches, transfers, requests, history, clock, settings, notes, log, adjustments, readings] = await Promise.all([
-    supabase.from("facilities").select("id, code, name, kind, district, lat, lng, user_id").order("name"),
+    supabase.from("facilities").select("id, code, name, kind, district, lat, lng, user_id, username").order("name"),
     supabase.from("medicines").select("id, name, condition, unit").order("name"),
     supabase.from("stock_batches").select("id, facility_id, medicine_id, batch_number, quantity, max_capacity, avg_daily_use, expiry_date, storage, bin_location"),
     supabase.from("stock_transfers").select("*").order("created_at", { ascending: false }),
@@ -17,12 +17,16 @@ export async function fetchNetwork() {
     supabase.from("stock_adjustments").select("*").order("created_at", { ascending: false }).limit(50),
     supabase.from("cold_chain_readings").select("*").order("created_at", { ascending: false }).limit(60),
   ]);
+  const named: [string, { error: { message: string } | null }][] = [["facilities", facs], ["medicines", meds], ["stock", batches], ["transfers", transfers], ["requests", requests], ["history", history], ["settings", settings], ["notifications", notes], ["automation log", log], ["stock adjustments", adjustments], ["cold chain", readings]];
+  const warnings = named.filter(([, r]) => r.error).map(([n, r]) => `${n}: ${r.error!.message}`);
+  if (facs.error || meds.error || batches.error) throw new Error(warnings.join("; "));
   const offset = clock.data?.offset_days ?? 0;
   const today = new Date(Date.now() + offset * 86400000);
   const facilities = facs.data ?? [];
   const medicines = meds.data ?? [];
   const allBatches = batches.data ?? [];
-  const me = facilities.find((f) => f.user_id === u.user?.id) ?? null;
+  const uname = u.user?.email?.split("@")[0];
+  const me = facilities.find((f) => f.user_id === u.user?.id) ?? facilities.find((f) => f.username === uname) ?? null;
 
   const items = facilities.flatMap((f) =>
     medicines
@@ -48,6 +52,7 @@ export async function fetchNetwork() {
   return {
     today,
     offset,
+    warnings,
     settings: settings.data ?? [],
     notifications: notes.data ?? [],
     log: log.data ?? [],
