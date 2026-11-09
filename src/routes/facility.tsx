@@ -103,7 +103,30 @@ function FacilityLayout() {
           ) : !isLoading && net && !net.me ? (
             <p className="text-sm text-muted-foreground">You are signed in, but this account is not linked to a facility. Sign out and sign in again with a demo facility.</p>
           ) : (
-            <p className="text-muted-foreground">Loading… Connect once and sign in to save this device workspace.</p>
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4 text-sm">
+              <p className="font-semibold">Facility workspace is not ready.</p>
+              <p className="text-muted-foreground">
+                {!navigator.onLine
+                  ? "Your browser is offline, so live facility data cannot be loaded."
+                  : localStorage.getItem("medicare-manual-offline") === "true"
+                    ? "Manual offline mode is enabled on this device. Turn it off to load live facility data."
+                    : isLoading
+                      ? "Connecting to the facility database…"
+                      : "No live or saved facility workspace is available for this signed-in account."}
+              </p>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("medicare-manual-offline");
+                  window.dispatchEvent(new Event("medicare-offline-change"));
+                  setConnected(navigator.onLine);
+                  void refetch();
+                }}
+                className="rounded-lg bg-primary px-3 py-2 font-semibold text-primary-foreground"
+              >
+                Reconnect and load facility data
+              </button>
+              {netError && <p className="text-xs text-destructive">{(netError as Error).message}</p>}
+            </div>
           )}
         </main>
       </div>
