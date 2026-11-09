@@ -16,14 +16,36 @@ function Stock() {
   const { net, scope } = useFacilityCtx();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [q, setQ] = useState("");
-  if (!net) return null;
-  const items = inScope(net.items, scope).filter((i) =>
+
+  // Never silently render a blank page while network data is unavailable.
+  if (!net) {
+    return (
+      <div className="space-y-4">
+        <FacilityHeader title="Stock & Inventory" />
+        <div role="status" className="rounded-xl border border-border bg-card p-4 text-sm">
+          <p className="font-semibold">Stock information is not available yet.</p>
+          <p className="mt-1 text-muted-foreground">The facility workspace has not finished loading. Refresh the page, or sign out and sign in again if this continues.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const allItems = Array.isArray(net.items) ? net.items : [];
+  const scopedItems = inScope(allItems, scope);
+  const items = scopedItems.filter((i) =>
     i.medicine.name.toLowerCase().includes(q.trim().toLowerCase()) &&
     (filter === "All" ? true : filter === "Low Stock" ? i.stock.status !== "in_stock" : i.stock.expiringSoon),
   );
+
   return (
     <div className="space-y-4">
       <FacilityHeader title="Stock & Inventory" />
+      {net.warnings.length > 0 && (
+        <section role="status" className="space-y-1 rounded-xl border border-warning/40 bg-warning-soft p-3 text-xs">
+          <p className="font-semibold">Some facility data could not be loaded:</p>
+          {net.warnings.map((warning) => <p key={warning}>{warning}</p>)}
+        </section>
+      )}
       <div className="relative">
         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search medicine…" maxLength={60}
@@ -37,7 +59,29 @@ function Stock() {
           </button>
         ))}
       </div>
-      {items.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No matching stock.</p>}
+      {items.length === 0 && (
+        <section className="space-y-2 rounded-xl border border-border bg-card p-4 text-sm">
+          <p className="font-semibold">No matching stock records.</p>
+          <p className="text-muted-foreground">
+            {allItems.length === 0
+              ? "The database returned no facility-and-medicine stock batches. Check the data counts below to identify whether facilities, medicines or stock batches are missing."
+              : "Stock records exist, but none match the selected site, search text or filter. Choose All Sites and the All filter, or clear your search."}
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <p>Signed-in facility: <strong>{net.me?.name ?? "Not matched"}</strong></p>
+            <p>Selected scope: <strong>{scope || "Not selected"}</strong></p>
+            <p>Facilities returned: <strong>{net.facilities.length}</strong></p>
+            <p>Medicines returned: <strong>{net.medicines.length}</strong></p>
+            <p>Stock batches returned: <strong>{net.batches.length}</strong></p>
+            <p>Stock items built: <strong>{allItems.length}</strong></p>
+          </div>
+          {!net.me && (
+            <p className="rounded-lg bg-destructive-soft p-2 text-xs text-destructive">
+              This signed-in account is not linked to a facility record. Sign out and sign in with the correct facility demo account.
+            </p>
+          )}
+        </section>
+      )}
       {items.map((i) => (
         <Card key={i.facility.id + i.medicine.id}>
           <div className="flex items-start justify-between gap-2">
