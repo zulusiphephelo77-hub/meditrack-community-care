@@ -6,7 +6,8 @@ import { Card, fmtDate } from "@/components/medicare";
 import { daysUntil } from "@/lib/stock";
 import { inScope } from "@/lib/network";
 import { cn } from "@/lib/utils";
-import { FacilityHeader, useFacilityCtx } from "./facility";
+import { FacilityHeader } from "./facility";
+import { useFacilityCtx } from "@/lib/facility-context";
 
 export const Route = createFileRoute("/facility/stock")({ head: () => pageHead('Stock & Inventory', 'Medicine stock levels and batch expiry dates.'), component: Stock });
 

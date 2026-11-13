@@ -1,11 +1,13 @@
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Boxes, LayoutDashboard, MoreHorizontal, Truck } from "lucide-react";
 import { BottomNav, Logo, PrototypeBanner, fmtDate } from "@/components/medicare";
 import { requireRole } from "@/lib/role-guard";
 import { fetchNetwork, type Network } from "@/lib/network";
 import { supabase } from "@/integrations/supabase/client";
+import { FacilityCtx, useFacilityCtx } from "@/lib/facility-context";
+export { useFacilityCtx };
 
 export const Route = createFileRoute("/facility")({
   ssr: false,
@@ -22,9 +24,6 @@ export const Route = createFileRoute("/facility")({
   component: FacilityLayout,
 });
 
-type Ctx = { net: Network | undefined; scope: string; setScope: (s: string) => void };
-const FacilityCtx = createContext<Ctx>({ net: undefined, scope: "all", setScope: () => {} });
-export const useFacilityCtx = () => useContext(FacilityCtx);
 export const useNetwork = (enabled = true) => useQuery({ queryKey: ["network"], queryFn: fetchNetwork, enabled });
 
 export const ENGINE_INTERVAL_MS = 30_000;
