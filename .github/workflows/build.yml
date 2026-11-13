@@ -24,6 +24,6 @@ jobs:
         with:
           node-version: 22
       - name: Install dependencies
-        run: yarn install --non-interactive --network-timeout 600000
+        run: yarn install --non-interactive --network-timeout 600000 --ignore-optional
       - name: Build
         run: yarn build
