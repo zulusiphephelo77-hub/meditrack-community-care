@@ -23,6 +23,6 @@ jobs:
         with:
           node-version: 22
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+        run: yarn install --non-interactive --network-timeout 600000
       - name: Build
-        run: npm run build
+        run: yarn build
