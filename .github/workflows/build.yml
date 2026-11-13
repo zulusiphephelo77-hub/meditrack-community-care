@@ -22,8 +22,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
-        run: yarn install --non-interactive --network-timeout 600000 --ignore-optional
+        run: npm install --legacy-peer-deps --no-audit --no-fund
       - name: Build
-        run: yarn build
+        run: npm run build
