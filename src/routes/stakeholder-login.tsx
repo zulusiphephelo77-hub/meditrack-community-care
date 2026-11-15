@@ -34,6 +34,9 @@ type DemoSession = { stakeholder: Stakeholder; facility: string };
 
 export const Route = createFileRoute("/stakeholder-login")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>) => ({
+    workplace: typeof search.workplace === "string" ? search.workplace : "",
+  }),
   head: () => ({
     meta: [
       { title: "Healthcare Worker Demo Login — MediCare Sync" },
@@ -45,8 +48,17 @@ export const Route = createFileRoute("/stakeholder-login")({
 });
 
 function StakeholderDemo() {
+  const { workplace } = Route.useSearch();
+  const initialFacility = {
+    edendale: "Edendale Hospital",
+    kwadabeka: "KwaDabeka Community Health Centre",
+    ndwedwe: "Ndwedwe Rural Clinic",
+    ixopo: "Ixopo Rural Clinic",
+    mobile1: "Mobile Clinic Unit 1",
+  }[workplace] ?? "";
   const [selectedStakeholder, setSelectedStakeholder] = useState<Stakeholder | null>(null);
-  const [facility, setFacility] = useState("");
+  const [facility, setFacility] = useState(initialFacility);
+  const [changingFacility, setChangingFacility] = useState(false);
   const [workerId, setWorkerId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -63,7 +75,8 @@ function StakeholderDemo() {
 
   function chooseAccount(stakeholder: Stakeholder) {
     setSelectedStakeholder(stakeholder);
-    setFacility("");
+    setFacility(stakeholder.needsFacility ? initialFacility : "");
+    setChangingFacility(false);
     setWorkerId(stakeholder.id);
     setPassword(stakeholder.password);
     setError("");
@@ -141,14 +154,21 @@ function StakeholderDemo() {
               <p className="text-sm text-muted-foreground">{selectedStakeholder.role}</p>
             </div>
             {selectedStakeholder.needsFacility && (
-              <label className="block text-sm font-medium">
-                Select your hospital or clinic
-                <select required value={facility} onChange={(event) => setFacility(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-                  <option value="">Choose a hospital or clinic…</option>
-                  {facilities.map((site) => <option key={site} value={site}>{site}</option>)}
-                </select>
-              </label>
+              facility && !changingFacility ? (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 px-3 py-3 text-sm">
+                  <span><span className="block text-xs text-muted-foreground">Workplace</span><span className="font-medium">{facility}</span></span>
+                  <button type="button" onClick={() => setChangingFacility(true)} className="text-sm font-semibold text-primary">Change</button>
+                </div>
+              ) : (
+                <label className="block text-sm font-medium">
+                  Select your hospital or clinic
+                  <select required value={facility} onChange={(event) => setFacility(event.target.value)}
+                    className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring">
+                    <option value="">Choose a hospital or clinic…</option>
+                    {facilities.map((site) => <option key={site} value={site}>{site}</option>)}
+                  </select>
+                </label>
+              )
             )}
             <label className="block text-sm font-medium">
               MediCareSync worker ID
@@ -177,3 +197,4 @@ function StakeholderDemo() {
     </div>
   );
 }
+
