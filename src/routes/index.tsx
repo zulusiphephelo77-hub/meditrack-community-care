@@ -40,7 +40,7 @@ function Landing() {
         </h1>
         <p className="mt-3 text-muted-foreground">Choose how you'd like to sign in.</p>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <Link
             to="/patient-login"
             className="group relative overflow-hidden rounded-3xl bg-gradient-patient p-6 text-primary-foreground shadow-card transition-transform active:scale-[0.98]"
@@ -58,6 +58,15 @@ function Landing() {
             <h2 className="mt-6 text-2xl font-bold">Healthcare Facilities</h2>
             <p className="mt-1 text-sm opacity-90">Manage stock, orders and patients</p>
             <ChevronRight className="absolute right-5 bottom-6 h-6 w-6 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            to="/stakeholder-login"
+            className="group relative overflow-hidden rounded-3xl border border-primary/20 bg-card p-6 text-foreground shadow-card transition-transform active:scale-[0.98]"
+          >
+            <Users className="h-12 w-12 text-primary" />
+            <h2 className="mt-6 text-2xl font-bold">Healthcare Workers</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Open the seven fictional stakeholder demos</p>
+            <ChevronRight className="absolute right-5 bottom-6 h-6 w-6 text-primary transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
