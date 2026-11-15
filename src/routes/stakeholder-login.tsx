@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, Eye, Users } from "lucide-react";
+import { ArrowLeft, Eye, LockKeyhole, Users } from "lucide-react";
 import { PrototypeBanner } from "@/components/medicare";
 import { StakeholderOperations } from "@/components/stakeholder-operations";
 
@@ -45,28 +45,46 @@ export const Route = createFileRoute("/stakeholder-login")({
 });
 
 function StakeholderDemo() {
-  const [selectedForFacility, setSelectedForFacility] = useState<Stakeholder | null>(null);
+  const [selectedStakeholder, setSelectedStakeholder] = useState<Stakeholder | null>(null);
   const [facility, setFacility] = useState("");
+  const [workerId, setWorkerId] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [session, setSession] = useState<DemoSession | null>(null);
 
   function enterDemo(stakeholder: Stakeholder, selectedFacility = "") {
     setSession({ stakeholder, facility: stakeholder.needsFacility ? selectedFacility : "" });
-    setSelectedForFacility(null);
+    setSelectedStakeholder(null);
     setFacility("");
+    setWorkerId("");
+    setPassword("");
+    setError("");
   }
 
   function chooseAccount(stakeholder: Stakeholder) {
-    if (stakeholder.needsFacility) {
-      setSelectedForFacility(stakeholder);
-      setFacility("");
-    } else {
-      enterDemo(stakeholder);
-    }
+    setSelectedStakeholder(stakeholder);
+    setFacility("");
+    setWorkerId(stakeholder.id);
+    setPassword(stakeholder.password);
+    setError("");
   }
 
-  function continueToDashboard(event: FormEvent<HTMLFormElement>) {
+  function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (selectedForFacility && facility) enterDemo(selectedForFacility, facility);
+    setError("");
+    if (!selectedStakeholder) {
+      setError("Select a worker account before signing in.");
+      return;
+    }
+    if (selectedStakeholder.needsFacility && !facility) {
+      setError("Select your hospital or clinic before signing in.");
+      return;
+    }
+    if (workerId.trim().toUpperCase() !== selectedStakeholder.id || password !== selectedStakeholder.password) {
+      setError("The worker ID or password does not match the selected demo account.");
+      return;
+    }
+    enterDemo(selectedStakeholder, facility);
   }
 
   if (session) {
@@ -100,35 +118,56 @@ function StakeholderDemo() {
         <div className="mt-6 flex flex-col items-center text-center">
           <span className="grid h-16 w-16 place-items-center rounded-2xl bg-primary-soft text-primary"><Users className="h-8 w-8" /></span>
           <h1 className="mt-3 text-2xl font-bold">Healthcare Worker Demo</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Choose a fictional stakeholder account to open its dashboard.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Select a worker account, review its login details, then sign in.</p>
         </div>
         <div className="mt-6 space-y-2">
           {stakeholders.map((person) => (
-            <button key={person.id} type="button" onClick={() => chooseAccount(person)}
-              className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left text-sm transition-colors hover:border-primary">
+            <button key={person.id} type="button" onClick={() => chooseAccount(person)} aria-pressed={selectedStakeholder?.id === person.id}
+              className={selectedStakeholder?.id === person.id ? "flex w-full items-center justify-between gap-3 rounded-xl border-2 border-primary bg-primary-soft px-4 py-3 text-left text-sm" : "flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left text-sm transition-colors hover:border-primary"}>
               <span className="min-w-0">
                 <span className="block font-semibold">{person.name}</span>
                 <span className="block text-xs text-muted-foreground">{person.role} · {person.id}</span>
-                <span className="block text-xs text-muted-foreground">Demo password: {person.password}</span>
               </span>
               <span className="shrink-0 rounded-lg bg-primary-soft px-3 py-2 text-xs font-semibold text-primary">
-                {person.needsFacility ? "Choose site" : "Demo account"}
+                {selectedStakeholder?.id === person.id ? "Selected" : "Select account"}
               </span>
             </button>
           ))}
         </div>
-        {selectedForFacility && (
-          <form onSubmit={continueToDashboard} className="mt-4 space-y-3 rounded-2xl border border-primary/30 bg-card p-4">
-            <p className="font-semibold">{selectedForFacility.name} · {selectedForFacility.role}</p>
+        {selectedStakeholder && (
+          <form onSubmit={signIn} className="mt-4 space-y-3 rounded-2xl border border-primary/30 bg-card p-4">
+            <div>
+              <p className="font-semibold">Sign in as {selectedStakeholder.name}</p>
+              <p className="text-sm text-muted-foreground">{selectedStakeholder.role}</p>
+            </div>
+            {selectedStakeholder.needsFacility && (
+              <label className="block text-sm font-medium">
+                Select your hospital or clinic
+                <select required value={facility} onChange={(event) => setFacility(event.target.value)}
+                  className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring">
+                  <option value="">Choose a hospital or clinic…</option>
+                  {facilities.map((site) => <option key={site} value={site}>{site}</option>)}
+                </select>
+              </label>
+            )}
             <label className="block text-sm font-medium">
-              Select your hospital or clinic
-              <select required autoFocus value={facility} onChange={(event) => setFacility(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-                <option value="">Choose a hospital or clinic…</option>
-                {facilities.map((site) => <option key={site} value={site}>{site}</option>)}
-              </select>
+              MediCareSync worker ID
+              <input required autoComplete="username" value={workerId} onChange={(event) => setWorkerId(event.target.value)}
+                className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
             </label>
-            <button className="w-full rounded-xl bg-primary py-3 font-semibold text-primary-foreground">Continue to demo dashboard</button>
+            <label className="block text-sm font-medium">
+              Password
+              <div className="relative mt-1">
+                <LockKeyhole className="absolute top-3.5 left-3 h-4 w-4 text-muted-foreground" />
+                <input required type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)}
+                  className="w-full rounded-xl border border-input bg-background py-3 pr-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+            </label>
+            {error && <p role="alert" className="rounded-xl bg-destructive-soft px-3 py-2 text-sm text-destructive">{error}</p>}
+            <button disabled={!selectedStakeholder || (selectedStakeholder.needsFacility && !facility)}
+              className="w-full rounded-xl bg-primary py-3 font-semibold text-primary-foreground disabled:opacity-50">
+              Sign in to {selectedStakeholder.role} demo
+            </button>
           </form>
         )}
         <p className="mt-4 text-center text-xs text-muted-foreground">
