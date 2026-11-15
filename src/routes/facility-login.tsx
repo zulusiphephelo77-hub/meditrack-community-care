@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Building2, ChevronLeft, Eye, EyeOff, Loader2, Lock, UserRound } from "lucide-react";
+import { Building2, ChevronLeft, ChevronRight, Eye, EyeOff, Loader2, Lock, UserRound, Users } from "lucide-react";
 import { facilityLogin } from "@/lib/auth.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { PrototypeBanner } from "@/components/medicare";
@@ -89,6 +89,15 @@ function FacilityLogin() {
             ))}
           </select>
         </label>
+
+        <section className="mt-5 rounded-xl border border-border bg-card p-4">
+          <h2 className="font-semibold">Healthcare worker demo accounts</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Open the seven role-based demonstration workspaces for clinic staff, pharmacy, management and the supply chain.</p>
+          <Link to="/stakeholder-login" className="mt-3 flex items-center justify-between rounded-lg bg-primary-soft px-3 py-3 text-sm font-semibold text-primary-deep hover:opacity-90">
+            <span className="inline-flex items-center gap-2"><Users className="h-4 w-4" /> Choose a worker demo account</span>
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </section>
 
         <form className="mt-5 space-y-3" onSubmit={(e) => { e.preventDefault(); submit(); }}>
           <label className="block text-sm font-medium">
