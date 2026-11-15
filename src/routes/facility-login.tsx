@@ -94,7 +94,7 @@ function FacilityLogin() {
         <section className="mt-5 rounded-xl border border-border bg-card p-4">
           <h2 className="font-semibold">Healthcare worker demo accounts</h2>
           <p className="mt-1 text-sm text-muted-foreground">Open the seven role-based demonstration workspaces for clinic staff, pharmacy, management and the supply chain.</p>
-          <Link to="/stakeholder-login" className="mt-3 flex items-center justify-between rounded-lg bg-primary-soft px-3 py-3 text-sm font-semibold text-primary-deep hover:opacity-90">
+          <Link to="/stakeholder-login" search={{ workplace: username }} className="mt-3 flex items-center justify-between rounded-lg bg-primary-soft px-3 py-3 text-sm font-semibold text-primary-deep hover:opacity-90">
             <span className="inline-flex items-center gap-2"><Users className="h-4 w-4" /> Choose a worker demo account</span>
             <ChevronRight className="h-4 w-4" />
           </Link>
@@ -128,3 +128,4 @@ function FacilityLogin() {
     </div>
   );
 }
+
