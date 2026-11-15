@@ -162,7 +162,7 @@ function StakeholderDemo() {
               ) : (
                 <label className="block text-sm font-medium">
                   Select your hospital or clinic
-                  <select required value={facility} onChange={(event) => setFacility(event.target.value)}
+                  <select required value={facility} onChange={(event) => { setFacility(event.target.value); setChangingFacility(false); }}
                     className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-ring">
                     <option value="">Choose a hospital or clinic…</option>
                     {facilities.map((site) => <option key={site} value={site}>{site}</option>)}
