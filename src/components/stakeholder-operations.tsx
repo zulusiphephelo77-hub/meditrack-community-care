@@ -7,11 +7,14 @@ type MetricItem = [string, string, string];
 
 export function StakeholderOperations({ role, facility }: Props) {
   const [workspace, setWorkspace] = useState<DemoWorkspace>(() => loadDemoWorkspace());
+  const [activeScreen, setActiveScreen] = useState("Overview");
   const [bulletin, setBulletin] = useState("");
   useEffect(() => { saveDemoWorkspace(workspace); }, [workspace]);
 
   const update = (next: (current: DemoWorkspace) => DemoWorkspace) => setWorkspace(next);
   const is = (name: string) => role === name;
+  const screens = screensFor(role);
+  const workScreen = screens[1] ?? "Overview";
   const metrics: MetricItem[] = is("Nurse / Clinic Staff")
     ? [["Open care tasks", String(workspace.tasks.filter((x) => !x.done).length), "Complete tasks below"], ["Appointments today", "18", "Fictional schedule"], ["Selected site", facility, "Local demo"]]
     : is("Pharmacist")
@@ -36,10 +39,28 @@ export function StakeholderOperations({ role, facility }: Props) {
         <Eye className="h-4 w-4 shrink-0" />Fictional demo only. Changes save in this browser and never affect live patients, facilities, or Supabase.
       </div>
       <p className="mt-4 text-sm text-muted-foreground">{summaryFor(role)}</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {metrics.map(([label, value, hint]) => <Metric key={label} label={label} value={value} hint={hint} />)}
-      </div>
-
+      <nav aria-label={`${role} dashboard screens`} role="tablist" className="mt-4 flex flex-wrap gap-2">
+        {screens.map((screen) => (
+          <button key={screen} type="button" role="tab" aria-selected={activeScreen === screen} aria-controls="worker-screen"
+            onClick={() => setActiveScreen(screen)}
+            className={activeScreen === screen ? "rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" : "rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted"}>
+            {screen}
+          </button>
+        ))}
+      </nav>
+      {activeScreen === "Overview" ? (
+        <div id="worker-screen" role="tabpanel" tabIndex={0} className="mt-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {metrics.map(([label, value, hint]) => <Metric key={label} label={label} value={value} hint={hint} />)}
+          </div>
+          <Panel title={`${role} access`}>
+            <p className="py-3 text-sm text-muted-foreground">{summaryFor(role)}</p>
+            <p className="py-3 text-sm text-muted-foreground">Available screen: {workScreen}. Only this role's fictional workspace and actions are shown.</p>
+          </Panel>
+        </div>
+      ) : (
+        <div id="worker-screen" role="tabpanel" tabIndex={0} className="mt-2">
+          <h2 className="mt-5 text-lg font-semibold">{workScreen}</h2>
       {is("Nurse / Clinic Staff") && <Panel title="Care task list">
         {workspace.tasks.map((task) => <Row key={task.id} title={task.title} detail={task.time} status={task.done ? "Completed" : "Open"}
           action={!task.done && <Action onClick={() => update((data) => ({ ...data, tasks: data.tasks.map((x) => x.id === task.id ? { ...x, done: true } : x) }))}>Complete task</Action>} />)}
@@ -110,11 +131,27 @@ export function StakeholderOperations({ role, facility }: Props) {
         </Panel>
       </>}
 
+        </div>
+      )}
+
       <div className="mt-6 flex flex-wrap gap-2">
         <button type="button" onClick={reset} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted"><RotateCcw className="h-4 w-4" /> Reset demo workspace</button>
       </div>
     </div>
   );
+}
+
+function screensFor(role: string) {
+  const roleScreens: Record<string, string[]> = {
+    "Nurse / Clinic Staff": ["Overview", "Care Tasks"],
+    Pharmacist: ["Overview", "Medicine & Dispensing"],
+    "Facility Manager": ["Overview", "Transfer Requests"],
+    "Warehouse Manager": ["Overview", "Warehouse Orders"],
+    "Supplier / Manufacturer": ["Overview", "Supplier Orders"],
+    Transport: ["Overview", "Delivery Routes"],
+    "Department of Health Official": ["Overview", "Regional Oversight"],
+  };
+  return roleScreens[role] ?? ["Overview", "Work Area"];
 }
 
 function summaryFor(role: string) {
@@ -127,7 +164,7 @@ function summaryFor(role: string) {
     Transport: "Advance simulated delivery routes and record fictional cold-chain checks.",
     "Department of Health Official": "Acknowledge sample regional alerts and publish a local demo bulletin.",
   };
-  return summaries[role] ?? "Read-only fictional stakeholder dashboard.";
+  return summaries[role] ?? "Fictional role-based demonstration workspace.";
 }
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
