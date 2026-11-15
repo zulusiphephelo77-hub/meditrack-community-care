@@ -77,10 +77,10 @@ function FacilityLogin() {
             defaultValue=""
             disabled={busy}
             onChange={(e) => {
-              if (!e.target.value) return;
-              setUsername(e.target.value);
-              setPassword(DEMO_PASSWORD);
-              submit(e.target.value, DEMO_PASSWORD);
+              const selectedUsername = e.target.value;
+              setUsername(selectedUsername);
+              setPassword(selectedUsername ? DEMO_PASSWORD : "");
+              setError(null);
             }}
           >
             <option value="">Choose a demo facility…</option>
@@ -89,6 +89,7 @@ function FacilityLogin() {
             ))}
           </select>
         </label>
+        <p className="mt-2 text-xs text-muted-foreground">Selecting a demo facility fills the sign-in form. Press Login below to continue.</p>
 
         <section className="mt-5 rounded-xl border border-border bg-card p-4">
           <h2 className="font-semibold">Healthcare worker demo accounts</h2>
