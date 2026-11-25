@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { distanceKm, spareQuantity, summarizeStock } from "./stock";
+import { patientRequest, stockTransfer } from "./state-machines";
 
 export async function fetchNetwork() {
   const { data: u } = await supabase.auth.getUser();
@@ -71,9 +72,10 @@ export async function fetchNetwork() {
 }
 
 export type Network = Awaited<ReturnType<typeof fetchNetwork>>;
-export const OPEN_TRANSFER = ["pending", "approved", "packed", "dispatched"];
+/** Derived from the lifecycle tables in state-machines.ts (same values as before). */
+export const OPEN_TRANSFER: string[] = [...stockTransfer.openStates];
 export const WAREHOUSE_CODE = "pmb-wh";
-export const OPEN_REQUEST = ["sent", "accepted", "ready"];
+export const OPEN_REQUEST: string[] = [...patientRequest.openStates];
 
 export function inScope<T extends { facility: { id: string } }>(list: T[], scope: string) {
   return scope === "all" ? list : list.filter((x) => x.facility.id === scope);

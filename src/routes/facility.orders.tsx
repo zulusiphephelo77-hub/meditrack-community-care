@@ -6,7 +6,8 @@ import { ArrowRight, Truck, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { Card, fmtDate } from "@/components/medicare";
 import { supabase } from "@/integrations/supabase/client";
-import { inScope, OPEN_REQUEST } from "@/lib/network";
+import { inScope, OPEN_REQUEST, OPEN_TRANSFER } from "@/lib/network";
+import { patientRequest, stockTransfer, type TransferAction } from "@/lib/state-machines";
 import { cn } from "@/lib/utils";
 import { FacilityHeader, useFacilityCtx } from "./facility";
 
@@ -152,6 +153,7 @@ function Orders() {
         <div className="space-y-3">
           {transfers.map((t) => {
             const isFrom = me === t.from_facility_id, isTo = me === t.to_facility_id;
+            const may = (a: TransferAction) => (isFrom && stockTransfer.can(t.status, a, "from")) || (isTo && stockTransfer.can(t.status, a, "to"));
             return (
               <Card key={t.id}>
                 <div className="flex items-center justify-between gap-2">
@@ -163,12 +165,12 @@ function Orders() {
                 </p>
                 <p className="text-xs text-muted-foreground">{t.source === "auto_order" ? "Auto-order · " : t.source === "expiry_suggestion" ? "Expiry move · " : ""}Urgency: <span className="capitalize">{t.urgency}</span> · {fmtDate(t.created_at)}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {t.status === "pending" && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "approve" }), "Approved — stock moved")}>Approve</Act>}
-                  {t.status === "pending" && (isFrom || isTo) && <Act danger onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "reject" }), "Rejected")}>Reject</Act>}
-                  {t.status === "approved" && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "pack" }), "Marked packed")}>Pack</Act>}
-                  {(t.status === "approved" || t.status === "packed") && isFrom && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "dispatch" }), "Marked dispatched")}>Mark dispatched</Act>}
-                  {t.status === "dispatched" && isTo && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "receive" }), "Marked received")}>Mark received</Act>}
-                  {!isFrom && !isTo && ["pending", "approved", "packed", "dispatched"].includes(t.status) && (
+                  {may("approve") && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "approve" }), "Approved — stock moved")}>Approve</Act>}
+                  {may("reject") && <Act danger onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "reject" }), "Rejected")}>Reject</Act>}
+                  {may("pack") && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "pack" }), "Marked packed")}>Pack</Act>}
+                  {may("dispatch") && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "dispatch" }), "Marked dispatched")}>Mark dispatched</Act>}
+                  {may("receive") && <Act onClick={() => run(() => supabase.rpc("act_on_stock_transfer", { _id: t.id, _action: "receive" }), "Marked received")}>Mark received</Act>}
+                  {!isFrom && !isTo && OPEN_TRANSFER.includes(t.status) && (
                     <p className="text-xs text-muted-foreground">Waiting on {t.status === "dispatched" ? name(t.to_facility_id) : name(t.from_facility_id)}</p>
                   )}
                   {(isFrom || isTo) && t.status === "pending" && !isFrom && <p className="text-xs text-muted-foreground">Awaiting approval from {name(t.from_facility_id)}</p>}
@@ -192,9 +194,9 @@ function Orders() {
               <p className="text-xs text-muted-foreground capitalize">{r.kind} · {medName(r.medicine_id)} · to {name(r.to_facility_id)} · {fmtDate(r.created_at)}</p>
               {me === r.to_facility_id && OPEN_REQUEST.includes(r.status) && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {r.status === "sent" && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "accepted" }), "Accepted")}>Accept</Act>}
-                  {r.status === "accepted" && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "ready" }), "Marked ready")}>Ready for collection</Act>}
-                  {r.status === "ready" && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "completed" }), "Completed")}>Collected</Act>}
+                  {patientRequest.can(r.status, "accept") && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "accepted" }), "Accepted")}>Accept</Act>}
+                  {patientRequest.can(r.status, "mark_ready") && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "ready" }), "Marked ready")}>Ready for collection</Act>}
+                  {patientRequest.can(r.status, "collect") && <Act onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "completed" }), "Completed")}>Collected</Act>}
                   <Act danger onClick={() => run(() => supabase.rpc("act_on_patient_request", { _id: r.id, _status: "rejected" }), "Rejected")}>Reject</Act>
                 </div>
               )}

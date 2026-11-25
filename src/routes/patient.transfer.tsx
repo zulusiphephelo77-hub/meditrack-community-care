@@ -9,20 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchMedicineAcrossFacilities } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { useMyMedicines, usePatient } from "./patient.index";
+import { patientRequest } from "@/lib/state-machines";
 
 export const Route = createFileRoute("/patient/transfer")({
   head: () => pageHead('Medicine Transfer', 'Medicine transcripts and hospital transfer requests.'),
   validateSearch: (s: Record<string, unknown>) => ({ medicineId: typeof s["medicineId"] === "string" ? s["medicineId"] : undefined }),
   component: TransferPage,
 });
-
-const STATUS_TEXT: Record<string, string> = {
-  sent: "Sent — waiting for the hospital",
-  accepted: "Accepted by the hospital",
-  ready: "Ready for collection",
-  completed: "Collected",
-  rejected: "Declined — please contact your clinic",
-};
 
 function TransferPage() {
   const search = Route.useSearch();
@@ -102,7 +95,7 @@ function TransferPage() {
               <p className="text-sm font-semibold capitalize">{r.kind} · {r.medicines?.name ?? "General"}</p>
               <p className="text-xs text-muted-foreground">{r.facilities?.name ?? "Nearest hospital"} · {fmtDate(r.created_at)}</p>
               <p className={cn("mt-1 text-xs font-semibold", r.status === "rejected" ? "text-destructive" : r.status === "completed" || r.status === "ready" ? "text-success" : "text-primary")}>
-                {STATUS_TEXT[r.status] ?? r.status}
+                {patientRequest.label(r.status)}
               </p>
             </Card>
           ))}

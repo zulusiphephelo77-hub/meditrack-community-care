@@ -7,13 +7,14 @@ import { requireRole } from "@/lib/role-guard";
 import { fetchNetwork, type Network } from "@/lib/network";
 import { supabase } from "@/integrations/supabase/client";
 import { FacilityCtx, useFacilityCtx } from "@/lib/facility-context";
+import { isConnected, OFFLINE_CHANGE_EVENT } from "@/lib/connectivity";
 export { useFacilityCtx };
 
 export const Route = createFileRoute("/facility")({
   ssr: false,
   beforeLoad: async ({ location }) => {
     // Offline mode exposes only a previously saved device workspace, never server privileges.
-    if (location.pathname === '/facility/offline' && (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true')) {
+    if (location.pathname === '/facility/offline' && !isConnected()) {
       const { data } = await supabase.auth.getSession();
       if (data.session?.user.id && localStorage.getItem('medicare-facility-session') === data.session.user.id) return;
       throw redirect({ to: '/facility-login' });
@@ -31,10 +32,10 @@ export const ENGINE_INTERVAL_MS = 30_000;
 function FacilityLayout() {
   const [connected, setConnected] = useState(true);
   useEffect(() => {
-    const update = () => setConnected(navigator.onLine && localStorage.getItem('medicare-manual-offline') !== 'true');
+    const update = () => setConnected(isConnected());
     update();
-    window.addEventListener('online', update); window.addEventListener('offline', update); window.addEventListener('medicare-offline-change', update);
-    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); window.removeEventListener('medicare-offline-change', update); };
+    window.addEventListener('online', update); window.addEventListener('offline', update); window.addEventListener(OFFLINE_CHANGE_EVENT, update);
+    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); window.removeEventListener(OFFLINE_CHANGE_EVENT, update); };
   }, []);
   const { data: net, error: netError, isLoading, refetch } = useNetwork(connected);
   const qc = useQueryClient();
@@ -67,7 +68,7 @@ function FacilityLayout() {
   useEffect(() => {
     let alive = true;
     const tick = async () => {
-      if (!navigator.onLine || localStorage.getItem('medicare-manual-offline') === 'true') return;
+      if (!isConnected()) return;
       await supabase.rpc("run_automation");
       if (alive) qc.invalidateQueries({ queryKey: ["network"] });
     };
